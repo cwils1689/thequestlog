@@ -12,6 +12,10 @@
 
   const $ = (id) => document.getElementById(id);
 
+  // Display-only cleanup: quest-data.json stays verbatim (source of truth),
+  // this just hides parenthetical detail when showing a name on screen.
+  const displayName = (name) => name.replace(/\s*\([^)]*\)/g, '').trim();
+
   /* ---------------------------------------------------------------------
      Boot
      --------------------------------------------------------------------- */
@@ -203,7 +207,7 @@
       }
       const nameEl = document.createElement('span');
       nameEl.className = 'exercise-name';
-      nameEl.textContent = it.exercise || it.name;
+      nameEl.textContent = displayName(it.exercise || it.name);
       if (it.is_new) {
         const badge = document.createElement('span');
         badge.className = 'new-badge';
@@ -402,7 +406,7 @@
     }
     const nameEl = document.createElement('span');
     nameEl.className = 'exercise-name';
-    nameEl.textContent = name;
+    nameEl.textContent = displayName(name);
     left.appendChild(nameEl);
     const reps = document.createElement('span');
     reps.className = 'exercise-reps';
