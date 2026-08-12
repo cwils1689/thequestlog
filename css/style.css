@@ -207,6 +207,10 @@ p { margin: 0 0 8px; }
 .exercise-list li.checkable.checked .exercise-check {
   background: var(--phase-1); border-color: var(--phase-1); color: #fff;
 }
+.exercise-list li.checkable.partial .exercise-check {
+  background: var(--gold); border-color: var(--gold-deep); color: var(--ink);
+  font-size: 10px;
+}
 .exercise-list li.checkable.checked .exercise-name,
 .exercise-list li.checkable.checked .exercise-reps {
   opacity: 0.55;

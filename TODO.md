@@ -4,7 +4,7 @@ Backlog of requested changes, not yet implemented.
 
 ---
 
-## 1. Account for rounds per day (exercise checkboxes) — DECIDED: Option A
+## 1. Account for rounds per day (exercise checkboxes) — DONE (uncommitted)
 
 **Problem**: the program has the kid do multiple full passes ("rounds")
 through the exercise list per session, but each exercise's checkbox on Today

@@ -149,9 +149,9 @@
     $('dayFocusChip').textContent = `${meta.label} · ${meta.focus}`;
     $('dayRoundsNote').textContent = roundsText(phase, slot.week);
 
-    renderExerciseList($('warmupList'), questData.warmup, false, 'warmup');
-    renderExerciseList($('exerciseList'), exercises, true, 'main');
-    renderExerciseList($('cooldownList'), questData.cooldown, false, 'cooldown');
+    renderExerciseList($('warmupList'), questData.warmup, false, 'warmup', 1);
+    renderExerciseList($('exerciseList'), exercises, true, 'main', roundsCount(phase, slot.week));
+    renderExerciseList($('cooldownList'), questData.cooldown, false, 'cooldown', 1);
 
     const alreadyDone = derived.completedIndexes.has(selectedProgramIndex);
     const label = alreadyDone ? 'Log another go at this quest!' : 'Session complete!';
@@ -170,26 +170,38 @@
     return phase.rounds_note;
   }
 
-  function renderExerciseList(ul, items, showSlot, checkSection) {
+  // How many rounds through the main exercise list for this phase/week —
+  // drives how many taps a checkbox takes to go from empty to fully done.
+  // Only Phase 1 currently specifies multiple rounds in quest-data.json;
+  // everything else is a single pass.
+  function roundsCount(phase, week) {
+    if (phase && phase.id === 1) return week <= 2 ? 2 : 3;
+    return 1;
+  }
+
+  function renderExerciseList(ul, items, showSlot, checkSection, maxRounds) {
+    maxRounds = maxRounds || 1;
     ul.innerHTML = '';
     items.forEach((it, idx) => {
       const li = document.createElement('li');
       const checkKey = checkSection ? `${checkSection}_${idx}` : null;
-      const checked = checkKey ? !!todayChecks[checkKey] : false;
+      const count = checkKey ? (todayChecks[checkKey] || 0) : 0;
+      const done = count >= maxRounds;
+      const partial = count > 0 && !done;
 
       if (checkSection) {
-        li.className = 'checkable' + (checked ? ' checked' : '');
+        li.className = 'checkable' + (done ? ' checked' : '') + (partial ? ' partial' : '');
         const box = document.createElement('span');
         box.className = 'exercise-check';
         box.setAttribute('aria-hidden', 'true');
-        box.textContent = checked ? '✓' : '';
+        box.textContent = done ? '✓' : (partial ? `${count}/${maxRounds}` : '');
         li.appendChild(box);
         li.setAttribute('role', 'checkbox');
-        li.setAttribute('aria-checked', String(checked));
+        li.setAttribute('aria-checked', String(done));
         li.tabIndex = 0;
         const toggle = () => {
-          todayChecks[checkKey] = !todayChecks[checkKey];
-          renderExerciseList(ul, items, showSlot, checkSection);
+          todayChecks[checkKey] = (count + 1) % (maxRounds + 1);
+          renderExerciseList(ul, items, showSlot, checkSection, maxRounds);
         };
         li.addEventListener('click', toggle);
         li.addEventListener('keydown', (e) => {
