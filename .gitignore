@@ -1,0 +1,7 @@
+# Not for the public repo — contains project brief text with personal context.
+CLAUDE_CODE_PROMPT.md
+
+# Local dev tooling
+.claude/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>The Quest Log</title>
+<meta name="description" content="A gamified strength &amp; mobility quest log — track sessions, XP, rank, and badges." />
+<meta name="theme-color" content="#1B1F3B" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="assets/icons/icon-192.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Nunito+Sans:wght@400;600&display=swap" media="print" onload="this.media='all'" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div id="app">
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-badge" aria-hidden="true">⭐</span>
+        <span class="brand-title">The Quest Log</span>
+      </div>
+      <div class="header-hud" id="headerHud">
+        <span class="hud-rank" id="headerRankName">Recruit</span>
+        <span class="hud-xp" id="headerXpTotal">0 XP</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main views -->
+  <main id="main">
+
+    <!-- TODAY -->
+    <section class="view" id="view-today" data-view="today">
+      <div class="view-inner">
+
+        <div class="today-picker card">
+          <button class="icon-btn" id="dayPrevBtn" aria-label="Previous session slot">‹</button>
+          <div class="today-picker-label">
+            <span class="picker-phase" id="pickerPhase">Phase 1 · Recruit Training</span>
+            <span class="picker-week-day" id="pickerWeekDay">Week 1 — Day A</span>
+          </div>
+          <button class="icon-btn" id="dayNextBtn" aria-label="Next session slot">›</button>
+        </div>
+        <button class="link-btn" id="jumpToNextBtn">Jump to my next quest</button>
+
+        <div class="card today-card" id="todayFocusCard">
+          <div class="day-chip" id="dayFocusChip">Foundation</div>
+          <h2 id="dayRoundsNote"></h2>
+        </div>
+
+        <details class="card collapsible" open>
+          <summary>🔥 Warm-up</summary>
+          <ul class="exercise-list" id="warmupList"></ul>
+        </details>
+
+        <div class="card exercises-card">
+          <h3 class="section-title">⚔️ Today's Quest</h3>
+          <ul class="exercise-list big" id="exerciseList"></ul>
+        </div>
+
+        <details class="card collapsible">
+          <summary>🧊 Cooldown</summary>
+          <ul class="exercise-list" id="cooldownList"></ul>
+        </details>
+
+        <button class="btn btn-ghost btn-block" id="focusViewBtn">📋 Quick-reference view</button>
+
+        <button class="btn btn-primary btn-huge" id="completeSessionBtn">
+          <span class="btn-huge-label">Session complete!</span>
+          <span class="btn-huge-sub" id="completeSessionSub">+10 XP</span>
+        </button>
+
+      </div>
+    </section>
+
+    <!-- XP & RANK -->
+    <section class="view" id="view-rank" data-view="rank">
+      <div class="view-inner">
+        <div class="card rank-hero">
+          <div class="rank-hero-name" id="rankHeroName">Recruit</div>
+          <div class="rank-hero-xp"><span id="rankHeroXp">0</span> XP</div>
+        </div>
+
+        <div class="card meter-card">
+          <div class="meter-track" id="meterTrack" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="meter-fill" id="meterFill"></div>
+            <div class="meter-pips" id="meterPips"></div>
+          </div>
+          <div class="meter-labels">
+            <span id="meterCurrentLabel">Recruit</span>
+            <span id="meterNextLabel">Trailblazer · 100 XP</span>
+          </div>
+          <p class="meter-caption" id="meterCaption">90 XP to go — keep climbing!</p>
+        </div>
+
+        <div class="card">
+          <h3 class="section-title">🪜 Rank Ladder</h3>
+          <ol class="rank-ladder" id="rankLadder"></ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- BADGES -->
+    <section class="view" id="view-badges" data-view="badges">
+      <div class="view-inner">
+        <h2 class="view-title">🎖️ Badge Case</h2>
+        <p class="view-subtitle">Tap a badge to see how to earn it.</p>
+        <div class="badge-grid" id="badgeGrid"></div>
+      </div>
+    </section>
+
+    <!-- QUEST BOARD -->
+    <section class="view" id="view-board" data-view="board">
+      <div class="view-inner">
+        <h2 class="view-title">🗺️ Quest Board</h2>
+        <p class="view-subtitle"><span id="boardCompletedCount">0</span> / 36 sessions on the trail</p>
+        <div class="quest-legend">
+          <span class="legend-item"><i class="legend-dot legend-a"></i>Day A</span>
+          <span class="legend-item"><i class="legend-dot legend-b"></i>Day B</span>
+          <span class="legend-item"><i class="legend-dot legend-c"></i>Day C</span>
+          <span class="legend-item"><i class="legend-star">★</i>Weekly bonus</span>
+        </div>
+        <div class="quest-trail" id="questTrail"></div>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="view" id="view-history" data-view="history">
+      <div class="view-inner">
+        <h2 class="view-title">📜 History</h2>
+        <button class="btn btn-ghost btn-block" id="undoLastBtn">↩️ Undo last session</button>
+        <div class="history-list" id="historyList"></div>
+        <p class="empty-state" id="historyEmpty" hidden>No quests logged yet — go complete one!</p>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="view" id="view-settings" data-view="settings">
+      <div class="view-inner">
+        <h2 class="view-title">⚙️ Settings</h2>
+
+        <div class="card">
+          <h3 class="section-title">Backup &amp; Transfer</h3>
+          <p class="hint">Progress lives only on this device. Export it to back up or move to a new tablet.</p>
+          <button class="btn btn-secondary btn-block" id="exportBtn">⬇️ Export progress</button>
+          <label class="btn btn-secondary btn-block file-btn">
+            ⬆️ Import progress
+            <input type="file" id="importInput" accept="application/json" hidden />
+          </label>
+        </div>
+
+        <div class="card danger-card">
+          <h3 class="section-title">Reset</h3>
+          <p class="hint">Wipes all sessions, XP, and badges on this device. This can't be undone (unless you've exported a backup).</p>
+          <button class="btn btn-danger btn-block" id="resetBtn">🗑️ Reset all progress</button>
+        </div>
+
+        <div class="card about-card">
+          <h3 class="section-title">About</h3>
+          <p class="hint">The Quest Log — digital companion to the printed 12-week program. Everything is stored locally on this device only.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="nav-btn active" data-nav="today"><span class="nav-icon">🏠</span><span>Today</span></button>
+    <button class="nav-btn" data-nav="rank"><span class="nav-icon">🚀</span><span>Rank</span></button>
+    <button class="nav-btn" data-nav="badges"><span class="nav-icon">🎖️</span><span>Badges</span></button>
+    <button class="nav-btn" data-nav="board"><span class="nav-icon">🗺️</span><span>Board</span></button>
+    <button class="nav-btn" data-nav="history"><span class="nav-icon">📜</span><span>History</span></button>
+    <button class="nav-btn" data-nav="settings"><span class="nav-icon">⚙️</span><span>Settings</span></button>
+  </nav>
+
+</div>
+
+<!-- Modals / overlays -->
+<div class="overlay" id="overlay" hidden>
+
+  <div class="modal" id="modalDaySelect" hidden>
+    <h3>Pick a session slot</h3>
+    <div class="modal-select-row">
+      <label>Week
+        <select id="selectWeek"></select>
+      </label>
+      <label>Day
+        <select id="selectDay">
+          <option value="A">Day A</option>
+          <option value="B">Day B</option>
+          <option value="C">Day C</option>
+        </select>
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="daySelectCancel">Cancel</button>
+      <button class="btn btn-primary" id="daySelectConfirm">Use this</button>
+    </div>
+  </div>
+
+  <div class="modal" id="modalBadge" hidden>
+    <div class="modal-badge-icon"><img id="modalBadgeImg" src="" alt="" /></div>
+    <h3 id="modalBadgeName"></h3>
+    <p id="modalBadgeCriteria"></p>
+    <p class="modal-badge-status" id="modalBadgeStatus"></p>
+    <div class="modal-actions" id="modalBadgeActions">
+      <button class="btn btn-ghost" id="modalBadgeClose">Close</button>
+      <button class="btn btn-primary" id="modalBadgeEarn">I did it! ✅</button>
+    </div>
+  </div>
+
+  <div class="modal" id="modalConfirm" hidden>
+    <h3 id="modalConfirmTitle">Are you sure?</h3>
+    <p id="modalConfirmBody"></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="modalConfirmCancel">Cancel</button>
+      <button class="btn btn-danger" id="modalConfirmOk">Confirm</button>
+    </div>
+  </div>
+
+  <div class="modal modal-wide" id="modalHistoryEdit" hidden>
+    <h3>Edit session</h3>
+    <div class="modal-select-row">
+      <label>Date
+        <input type="date" id="editDate" />
+      </label>
+    </div>
+    <div class="modal-select-row">
+      <label>Week
+        <select id="editWeek"></select>
+      </label>
+      <label>Day
+        <select id="editDay">
+          <option value="A">Day A</option>
+          <option value="B">Day B</option>
+          <option value="C">Day C</option>
+        </select>
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="editDeleteBtn">Delete</button>
+      <button class="btn btn-ghost" id="editCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="editSaveBtn">Save</button>
+    </div>
+  </div>
+
+  <div class="modal modal-wide" id="modalFocus" hidden>
+    <button class="icon-btn modal-close-x" id="focusCloseBtn" aria-label="Close">✕</button>
+    <h3 id="focusTitle">Day A — Week 1</h3>
+    <ul class="exercise-list huge" id="focusExerciseList"></ul>
+  </div>
+
+</div>
+
+<!-- Celebration layer -->
+<canvas id="confettiCanvas" aria-hidden="true"></canvas>
+<div class="toast" id="toast" hidden></div>
+<div class="rankup-banner" id="rankupBanner" hidden>
+  <div class="rankup-inner">
+    <div class="rankup-star">🌟</div>
+    <div class="rankup-title">Rank Up!</div>
+    <div class="rankup-name" id="rankupName"></div>
+    <button class="btn btn-primary" id="rankupCloseBtn">Nice!</button>
+  </div>
+</div>
+
+<script src="js/storage.js"></script>
+<script src="js/xp.js"></script>
+<script src="js/confetti.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

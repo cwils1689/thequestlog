@@ -1,0 +1,15 @@
+{
+  "name": "The Quest Log",
+  "short_name": "Quest Log",
+  "description": "Gamified companion to a 12-week strength & mobility quest — track sessions, XP, rank, and badges.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FBF7EC",
+  "theme_color": "#1B1F3B",
+  "icons": [
+    { "src": "assets/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "assets/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

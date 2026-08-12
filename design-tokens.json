@@ -1,0 +1,37 @@
+{
+  "description": "Visual identity carried over from the printed Quest Log package. Reuse these so the web app feels like the same product as the wall posters and cards.",
+  "color": {
+    "ink": "#1B1F3B",
+    "ink_soft": "#3C4270",
+    "paper": "#FBF7EC",
+    "paper_dim": "#F1ECDD",
+    "gold": "#FFC93C",
+    "gold_deep": "#E0A400",
+    "line_grey": "#C9C2AC",
+    "day_a_foundation": "#3D6FD6",
+    "day_a_soft": "#E7EDFC",
+    "day_b_mobility": "#2EA36B",
+    "day_b_soft": "#E4F5EC",
+    "day_c_power": "#E0562F",
+    "day_c_soft": "#FCE9E2",
+    "phase_1_recruit": "#2EC4B6",
+    "phase_1_soft": "#E6F9F7",
+    "phase_2_apprentice": "#8E3FB8",
+    "phase_2_soft": "#F3E9FA",
+    "phase_3_mastery": "#E0A400",
+    "phase_3_soft": "#FDF3DA"
+  },
+  "typography": {
+    "display_font": "Poppins (700/600 weight) — headers, XP numbers, rank names, badge names",
+    "body_font": "system-ui sans-serif or 'Nunito Sans' — body text, exercise lists",
+    "google_fonts_import": "https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Nunito+Sans:wght@400;600&display=swap",
+    "notes": "Headers are bold and chunky. Numbers (XP, reps, session counts) are always bold and prominent — they're the reward feedback."
+  },
+  "motifs": {
+    "background": "Dark navy 'night sky' header bands with a thin gold rule underneath, small white 4-point stars scattered as accents.",
+    "cards": "Rounded corners (8-14px), soft cream backgrounds, dashed borders on anything meant to feel like a printable/cut-out.",
+    "badges": "Circular medallion coins with a colored ring, radial-gradient face, dashed inner ring, and a bold flat-icon silhouette in the center. Assets already produced — see assets/badges/.",
+    "progress": "Rank progress shown as a filled meter/pip trail (see rank_meter concept in reference PDFs), not a plain percentage bar — it should feel like a game HUD.",
+    "iconography_rule": "Original space / fantasy-adventurer / blocky-world vibes only. No actual Star Wars, Lord of the Rings, or Minecraft characters, logos, or trademarked imagery, anywhere in the app — including AI-generated icons, emoji choices, or copy."
+  }
+}

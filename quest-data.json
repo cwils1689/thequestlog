@@ -1,0 +1,373 @@
+{
+  "program_name": "The Quest Log",
+  "schedule": "Monday / Wednesday / Friday",
+  "total_weeks": 12,
+  "warmup": [
+    {
+      "name": "Cat-Cow",
+      "dose": "10 reps"
+    },
+    {
+      "name": "90/90 hip switches",
+      "dose": "6 per side"
+    },
+    {
+      "name": "Arm circles + scapular wall slides",
+      "dose": "10 reps"
+    },
+    {
+      "name": "Bodyweight glute bridge (feet elevated on the 4\" aerobics step)",
+      "dose": "10 reps"
+    },
+    {
+      "name": "Dead hang from pull-up bar",
+      "dose": "15-20 sec"
+    }
+  ],
+  "cooldown": [
+    {
+      "name": "Standing quad stretch",
+      "dose": "20 sec"
+    },
+    {
+      "name": "Hip flexor stretch",
+      "dose": "20 sec"
+    },
+    {
+      "name": "Cross-body shoulder stretch",
+      "dose": "20 sec"
+    }
+  ],
+  "xp_rules": {
+    "xp_per_completed_session": 10,
+    "weekly_full_attendance_bonus": 15,
+    "badge_bonus_xp": 25,
+    "note": "At consistent 3x/week attendance plus badges earned along the way, Master of the Forge lands around the end of Week 12."
+  },
+  "ranks": [
+    {
+      "name": "Recruit",
+      "xp_required": 0
+    },
+    {
+      "name": "Trailblazer",
+      "xp_required": 100
+    },
+    {
+      "name": "Adventurer",
+      "xp_required": 250
+    },
+    {
+      "name": "Vanguard",
+      "xp_required": 450
+    },
+    {
+      "name": "Master of the Forge",
+      "xp_required": 700
+    }
+  ],
+  "badges": [
+    {
+      "key": "first_hang",
+      "name": "First Hang",
+      "criteria": "Hold a dead hang from the pull-up bar for 20 seconds",
+      "icon": "assets/badges/first_hang.png",
+      "day_relevance": "C"
+    },
+    {
+      "key": "squad_leader",
+      "name": "Squad Leader",
+      "criteria": "10 clean bodyweight squats to full depth in a row",
+      "icon": "assets/badges/squad_leader.png",
+      "day_relevance": "A"
+    },
+    {
+      "key": "iron_grip",
+      "name": "Iron Grip",
+      "criteria": "Complete a full farmer's carry without setting the weights down",
+      "icon": "assets/badges/iron_grip.png",
+      "day_relevance": "A"
+    },
+    {
+      "key": "steady_base",
+      "name": "Steady Base",
+      "criteria": "Hold single-leg balance 45 seconds each side, eyes closed",
+      "icon": "assets/badges/steady_base.png",
+      "day_relevance": "B"
+    },
+    {
+      "key": "full_turn",
+      "name": "Full Turn",
+      "criteria": "Hit the target shoulder/hip rotation mobility benchmark",
+      "icon": "assets/badges/full_turn.png",
+      "day_relevance": "B"
+    },
+    {
+      "key": "first_ascent",
+      "name": "First Ascent",
+      "criteria": "First pull-up, unassisted",
+      "icon": "assets/badges/first_ascent.png",
+      "day_relevance": "C"
+    }
+  ],
+  "days_meta": {
+    "A": {
+      "label": "Day A",
+      "weekday": "Monday",
+      "focus": "Foundation",
+      "color": "#3D6FD6",
+      "color_soft": "#E7EDFC"
+    },
+    "B": {
+      "label": "Day B",
+      "weekday": "Wednesday",
+      "focus": "Mobility & Balance (Golf Focus)",
+      "color": "#2EA36B",
+      "color_soft": "#E4F5EC"
+    },
+    "C": {
+      "label": "Day C",
+      "weekday": "Friday",
+      "focus": "Power & Pull",
+      "color": "#E0562F",
+      "color_soft": "#FCE9E2"
+    }
+  },
+  "phases": [
+    {
+      "id": 1,
+      "weeks": "1-4",
+      "name": "Recruit Training",
+      "load": "Bodyweight only",
+      "color": "#2EC4B6",
+      "color_soft": "#E6F9F7",
+      "rounds_note": "Weeks 1-2: 2 rounds through the list. Weeks 3-4: 3 rounds through the list.",
+      "days": {
+        "A": [
+          {
+            "slot": "Squat",
+            "exercise": "Bodyweight squat to bench (sit-to-stand, bench as depth target)",
+            "reps": "8-10"
+          },
+          {
+            "slot": "Push",
+            "exercise": "Incline push-up (hands on aerobics step)",
+            "reps": "5-8"
+          },
+          {
+            "slot": "Core",
+            "exercise": "Dead bug",
+            "reps": "6-8 per side"
+          },
+          {
+            "slot": "Carry",
+            "exercise": "Farmer's carry (empty handles or 5-10 lb)",
+            "reps": "20-30 ft"
+          }
+        ],
+        "B": [
+          {
+            "slot": "Step/Balance",
+            "exercise": "Step-up onto a taller household bench or stair step (~8-12\")",
+            "reps": "6 per side"
+          },
+          {
+            "slot": "Rotation",
+            "exercise": "Open-book thoracic rotation (lying on side)",
+            "reps": "6 per side"
+          },
+          {
+            "slot": "Rotation",
+            "exercise": "Standing rotational reach (bodyweight, mimics a golf downswing turn)",
+            "reps": "8 per side"
+          },
+          {
+            "slot": "Core",
+            "exercise": "Bird-dog",
+            "reps": "6 per side"
+          }
+        ],
+        "C": [
+          {
+            "slot": "Pull",
+            "exercise": "Scapular pulls / dead hangs on pull-up bar",
+            "reps": "3-5 reps or 15-20 sec hang"
+          },
+          {
+            "slot": "Hinge",
+            "exercise": "Bodyweight hip hinge (hands sliding down thighs)",
+            "reps": "8"
+          },
+          {
+            "slot": "Core",
+            "exercise": "Plank",
+            "reps": "15-20 sec"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "weeks": "5-8",
+      "name": "Apprentice Trials",
+      "load": "Light dumbbells introduced",
+      "color": "#8E3FB8",
+      "color_soft": "#F3E9FA",
+      "rounds_note": null,
+      "days": {
+        "A": [
+          {
+            "slot": "Squat",
+            "exercise": "Goblet squat, 5-10 lb DB",
+            "reps": "8-10"
+          },
+          {
+            "slot": "Push",
+            "exercise": "Incline push-up, working toward flat push-up as strength allows",
+            "reps": "6-10"
+          },
+          {
+            "slot": "Core",
+            "exercise": "Dead bug, slower tempo",
+            "reps": "6-8 per side"
+          },
+          {
+            "slot": "Carry",
+            "exercise": "Farmer's carry, heavier",
+            "reps": "30-40 ft"
+          }
+        ],
+        "B": [
+          {
+            "slot": "Step/Balance",
+            "exercise": "Step-up on the taller bench/stair",
+            "reps": "6-8 per side"
+          },
+          {
+            "slot": "Step/Balance",
+            "exercise": "Single-leg RDL, bodyweight only",
+            "reps": "6 per side",
+            "is_new": true
+          },
+          {
+            "slot": "Rotation",
+            "exercise": "Open-book thoracic rotation + standing rotational reach",
+            "reps": "6-8 per side"
+          },
+          {
+            "slot": "Rotation",
+            "exercise": "Seated trunk rotation, holding a light DB at the chest",
+            "reps": "8 per side",
+            "is_new": true
+          },
+          {
+            "slot": "Core",
+            "exercise": "Bird-dog, add a 2-second hold at full extension",
+            "reps": "6 per side"
+          }
+        ],
+        "C": [
+          {
+            "slot": "Pull",
+            "exercise": "Negative pull-ups (slow 3-5 sec lower from the top, using the bench to get up there)",
+            "reps": "3-5"
+          },
+          {
+            "slot": "Hinge",
+            "exercise": "DB Romanian deadlift, light",
+            "reps": "8"
+          },
+          {
+            "slot": "Row",
+            "exercise": "Single-arm DB row on the bench",
+            "reps": "8 per side",
+            "is_new": true
+          },
+          {
+            "slot": "Core",
+            "exercise": "Plank, longer hold",
+            "reps": "20-30 sec"
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "weeks": "9-12",
+      "name": "Path to Mastery",
+      "load": "Heavier loads + controlled power work",
+      "color": "#E0A400",
+      "color_soft": "#FDF3DA",
+      "rounds_note": null,
+      "days": {
+        "A": [
+          {
+            "slot": "Squat",
+            "exercise": "Goblet squat, progressing load",
+            "reps": "8-10"
+          },
+          {
+            "slot": "Push",
+            "exercise": "Flat DB bench press on the adjustable bench",
+            "reps": "6-10"
+          },
+          {
+            "slot": "Core",
+            "exercise": "Plank hold",
+            "reps": "20-30 sec"
+          },
+          {
+            "slot": "Carry",
+            "exercise": "Farmer's carry, heavier still",
+            "reps": "40-50 ft"
+          }
+        ],
+        "B": [
+          {
+            "slot": "Step/Balance",
+            "exercise": "Step-up on the taller bench/stair, progressing height or adding light DBs",
+            "reps": "6-8 per side"
+          },
+          {
+            "slot": "Step/Balance",
+            "exercise": "Lateral step-ups (stepping sideways onto the bench)",
+            "reps": "6 per side",
+            "is_new": true
+          },
+          {
+            "slot": "Rotation",
+            "exercise": "Step-and-rotate drill (replaces the standing rotational reach)",
+            "reps": "8 per side"
+          },
+          {
+            "slot": "Core",
+            "exercise": "Bird-dog, continues",
+            "reps": "6-8 per side"
+          }
+        ],
+        "C": [
+          {
+            "slot": "Pull",
+            "exercise": "Full pull-up attempts (bench-assisted jump to top, controlled slow lower)",
+            "reps": "As many clean reps as possible"
+          },
+          {
+            "slot": "Hinge",
+            "exercise": "DB Romanian deadlift, progressing load",
+            "reps": "8"
+          },
+          {
+            "slot": "Row",
+            "exercise": "Single-arm DB row, heavier",
+            "reps": "8 per side"
+          },
+          {
+            "slot": "Core",
+            "exercise": "Plank, continues",
+            "reps": "30+ sec"
+          }
+        ]
+      }
+    }
+  ]
+}
