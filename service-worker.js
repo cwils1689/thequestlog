@@ -2,7 +2,7 @@
    The app is already static + localStorage, so this just caches the app
    shell and data so it still opens with no signal mid-workout. */
 
-const CACHE_NAME = 'quest-log-v2';
+const CACHE_NAME = 'quest-log-v3';
 
 const CORE_ASSETS = [
   './',
@@ -26,7 +26,14 @@ const CORE_ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(CORE_ASSETS))
+      .then((cache) => Promise.all(
+        // {cache: 'reload'} bypasses the browser's HTTP cache so a fresh
+        // deploy can never get baked in stale — without this, addAll() can
+        // silently pick up an old disk-cached copy of a file and pin it.
+        CORE_ASSETS.map((url) => fetch(url, { cache: 'reload' }).then((res) => {
+          if (res.ok) return cache.put(url, res);
+        }).catch(() => {}))
+      ))
       .then(() => self.skipWaiting())
   );
 });
@@ -39,25 +46,23 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Cache-first for same-origin GET requests, falling back to network,
-// and updating the cache in the background when possible.
+// Network-first for same-origin GET requests, falling back to the cache
+// only when offline. This means an online device always gets the latest
+// deploy; the cache exists purely as an offline fallback mid-workout.
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
 
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const fetchPromise = fetch(event.request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.ok) {
-            const clone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return networkResponse;
-        })
-        .catch(() => cached);
-      return cached || fetchPromise;
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.ok) {
+          const clone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        }
+        return networkResponse;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
