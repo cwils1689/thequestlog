@@ -157,12 +157,20 @@
     renderExerciseList($('cooldownList'), questData.cooldown, false, 'cooldown', 1);
 
     const alreadyDone = derived.completedIndexes.has(selectedProgramIndex);
-    const label = alreadyDone ? 'Log another go at this quest!' : 'Session complete!';
-    $('completeSessionBtn').querySelector('.btn-huge-label').textContent = label;
-    const willGetWeeklyBonus = wouldTriggerWeeklyBonus();
-    $('completeSessionSub').textContent = willGetWeeklyBonus
-      ? `+${questData.xp_rules.xp_per_completed_session} XP + ${questData.xp_rules.weekly_full_attendance_bonus} XP weekly bonus!`
-      : `+${questData.xp_rules.xp_per_completed_session} XP`;
+    const completeBtn = $('completeSessionBtn');
+    if (derived.loggedToday) {
+      completeBtn.disabled = true;
+      completeBtn.querySelector('.btn-huge-label').textContent = 'Already logged today! 🎉';
+      $('completeSessionSub').textContent = 'One session a day — see you next time!';
+    } else {
+      completeBtn.disabled = false;
+      const label = alreadyDone ? 'Log another go at this quest!' : 'Session complete!';
+      completeBtn.querySelector('.btn-huge-label').textContent = label;
+      const willGetWeeklyBonus = wouldTriggerWeeklyBonus();
+      $('completeSessionSub').textContent = willGetWeeklyBonus
+        ? `+${questData.xp_rules.xp_per_completed_session} XP + ${questData.xp_rules.weekly_full_attendance_bonus} XP weekly bonus!`
+        : `+${questData.xp_rules.xp_per_completed_session} XP`;
+    }
   }
 
   // Every phase follows the same escalation: 2 rounds through the first
@@ -251,6 +259,7 @@
   }
 
   function completeSession() {
+    if (derived.loggedToday) return; // belt-and-suspenders — button should already be disabled
     const session = {
       id: 's_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
       programIndex: selectedProgramIndex,

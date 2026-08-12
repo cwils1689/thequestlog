@@ -37,6 +37,15 @@
     return d.toISOString().slice(0, 10);
   }
 
+  /** Local calendar date (not UTC — toISOString() can shift near midnight) as a YYYY-MM-DD key. */
+  function calendarDayKey(dateISO) {
+    const d = new Date(dateISO);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
   /**
    * Recompute all derived XP/rank state from scratch every time — this keeps
    * edits/deletes in History always consistent instead of tracking bonus
@@ -113,7 +122,11 @@
     const nextProgramIndex = Math.min(TOTAL_SESSIONS - 1, maxIndex + 1);
     const programComplete = maxIndex >= TOTAL_SESSIONS - 1;
 
+    const todayKey = calendarDayKey(new Date().toISOString());
+    const loggedToday = sessions.some((s) => calendarDayKey(s.dateISO) === todayKey);
+
     return {
+      loggedToday,
       sessionsWithXP,
       totalXP,
       sessionXP,
@@ -139,6 +152,7 @@
     phaseForWeek,
     exercisesFor,
     calendarWeekKey,
+    calendarDayKey,
     computeDerived,
   };
 })(window);

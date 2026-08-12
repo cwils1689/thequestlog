@@ -249,6 +249,11 @@ p { margin: 0 0 8px; }
 .btn-block { width: 100%; }
 .btn-primary { background: var(--gold); color: var(--ink); box-shadow: 0 3px 0 var(--gold-deep); }
 .btn-primary:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--gold-deep); }
+.btn-primary:disabled {
+  background: var(--phase-1-soft); color: var(--phase-1); box-shadow: 0 3px 0 var(--phase-1);
+  cursor: default;
+}
+.btn-primary:disabled:active { transform: none; box-shadow: 0 3px 0 var(--phase-1); }
 .btn-secondary { background: var(--ink); color: var(--paper); }
 .btn-ghost { background: var(--paper-dim); color: var(--ink); border: 1px solid var(--line-grey); }
 .btn-danger { background: #fff; color: var(--day-c); border: 1.5px solid var(--day-c); }
