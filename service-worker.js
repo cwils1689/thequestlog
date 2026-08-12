@@ -2,7 +2,8 @@
    The app is already static + localStorage, so this just caches the app
    shell and data so it still opens with no signal mid-workout. */
 
-const CACHE_NAME = 'quest-log-v3';
+const CACHE_NAME = 'quest-log-v4';
+const NETWORK_TIMEOUT_MS = 3000;
 
 const CORE_ASSETS = [
   './',
@@ -47,22 +48,33 @@ self.addEventListener('activate', (event) => {
 });
 
 // Network-first for same-origin GET requests, falling back to the cache
-// only when offline. This means an online device always gets the latest
-// deploy; the cache exists purely as an offline fallback mid-workout.
+// when offline OR when the network is too slow to bother waiting on. This
+// means an online device always gets the latest deploy; the cache exists
+// purely as a fallback (offline, or a bad connection mid-workout).
+//
+// { cache: 'no-store' } on the network fetch is required, not optional:
+// GitHub Pages serves files with `Cache-Control: max-age=600`, so a plain
+// fetch() here could silently be answered by the browser's own disk cache
+// with a stale file instead of actually hitting the network — defeating
+// this whole "network-first" strategy without that override.
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
 
+  const networkFetch = fetch(event.request, { cache: 'no-store' }).then((networkResponse) => {
+    if (networkResponse && networkResponse.ok) {
+      const clone = networkResponse.clone();
+      caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+    }
+    return networkResponse;
+  });
+
+  const timeout = new Promise((resolve) => setTimeout(() => resolve(null), NETWORK_TIMEOUT_MS));
+
   event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
-        if (networkResponse && networkResponse.ok) {
-          const clone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        }
-        return networkResponse;
-      })
+    Promise.race([networkFetch, timeout])
+      .then((res) => res || caches.match(event.request).then((cached) => cached || networkFetch))
       .catch(() => caches.match(event.request))
   );
 });
