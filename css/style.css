@@ -339,6 +339,27 @@ p { margin: 0 0 8px; }
 .quest-stop .stop-star { position: absolute; top: -8px; right: -4px; font-size: 13px; color: var(--gold-deep); }
 .quest-stop.finish { border-width: 3px; border-style: double; }
 
+.side-quest-node {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; margin: 2px 0;
+  border-radius: var(--radius-sm);
+  border: 2px dashed var(--sq-color, var(--gold-deep));
+  background: #fff;
+  font-family: var(--font-display); font-weight: 700; font-size: 13px;
+  color: var(--ink); text-align: left; cursor: pointer;
+}
+.sq-node-icon { font-size: 18px; flex: 0 0 auto; }
+.side-quest-node.locked { opacity: 0.5; cursor: default; border-style: dotted; }
+.side-quest-node.earned { background: var(--gold); border-style: solid; border-color: var(--gold-deep); }
+
+/* Side Quest modal */
+.side-quest-tag {
+  display: inline-block; font-family: var(--font-display); font-weight: 700;
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--gold-deep); margin-bottom: 4px;
+}
+
 /* ---------------- History ---------------- */
 .history-list { display: flex; flex-direction: column; gap: 8px; }
 .history-item {

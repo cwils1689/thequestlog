@@ -78,7 +78,15 @@
     const earnedBadges = Object.keys(state.badges).filter((k) => state.badges[k] && state.badges[k].earned);
     const badgeXP = earnedBadges.length * badgeBonus;
 
-    const totalXP = sessionXP + badgeXP;
+    const sideQuests = state.sideQuests || {};
+    const sideQuestDefs = questData.side_quests || [];
+    const earnedSideQuests = Object.keys(sideQuests).filter((k) => sideQuests[k] && sideQuests[k].earned);
+    const sideQuestXP = earnedSideQuests.reduce((sum, key) => {
+      const def = sideQuestDefs.find((sq) => sq.key === key);
+      return sum + (def ? def.xp_reward : 0);
+    }, 0);
+
+    const totalXP = sessionXP + badgeXP + sideQuestXP;
 
     const ranks = questData.ranks.slice().sort((a, b) => a.xp_required - b.xp_required);
     let currentRank = ranks[0];
@@ -111,6 +119,8 @@
       sessionXP,
       badgeXP,
       earnedBadges,
+      sideQuestXP,
+      earnedSideQuests,
       currentRank,
       nextRank,
       progressFraction: Math.max(0, Math.min(1, progressFraction)),

@@ -39,6 +39,7 @@
     wireToday();
     wireRank();
     wireBadges();
+    wireSideQuests();
     wireHistory();
     wireSettings();
     wireModals();
@@ -336,6 +337,77 @@
     $('modalBadgeEarn').addEventListener('click', attemptEarnBadge);
   }
 
+  let activeSideQuestKey = null;
+
+  function wireSideQuests() {
+    $('sqCloseBtn').addEventListener('click', closeModal);
+    $('sqEarnBtn').addEventListener('click', attemptEarnSideQuest);
+  }
+
+  function openSideQuestModal(key) {
+    activeSideQuestKey = key;
+    const sq = (questData.side_quests || []).find((x) => x.key === key);
+    if (!sq) return;
+    const earned = state.sideQuests[key] && state.sideQuests[key].earned;
+    $('sqName').textContent = sq.name;
+    $('sqTagline').textContent = sq.tagline || '';
+    const list = $('sqSteps');
+    list.innerHTML = '';
+    (sq.steps || []).forEach((step) => {
+      const li = document.createElement('li');
+      const left = document.createElement('span');
+      left.className = 'exercise-text';
+      const labelEl = document.createElement('span');
+      labelEl.className = 'exercise-slot';
+      labelEl.textContent = step.label;
+      const detailEl = document.createElement('span');
+      detailEl.className = 'exercise-name';
+      detailEl.textContent = step.detail;
+      left.appendChild(labelEl);
+      left.appendChild(detailEl);
+      li.appendChild(left);
+      list.appendChild(li);
+    });
+    if (earned) {
+      $('sqStatus').textContent = `Earned ${state.sideQuests[key].date}`;
+      $('sqEarnBtn').hidden = true;
+    } else {
+      $('sqStatus').textContent = `Worth +${sq.xp_reward} XP`;
+      $('sqEarnBtn').hidden = false;
+    }
+    openModal('modalSideQuest');
+  }
+
+  function attemptEarnSideQuest() {
+    if (!activeSideQuestKey) return;
+    if (!state.settings.badgePinHash) {
+      openPinCreate(
+        'Set a parent PIN to approve Side Quests and badges — one only a grown-up knows. This will be granted once it\'s set.',
+        grantSideQuest
+      );
+    } else {
+      openPinVerify('Enter the parent PIN to approve this Side Quest.', grantSideQuest);
+    }
+  }
+
+  function grantSideQuest() {
+    if (!activeSideQuestKey) return;
+    const sq = (questData.side_quests || []).find((x) => x.key === activeSideQuestKey);
+    if (!sq) return;
+    const prevRank = derived.currentRank.name;
+    const today = new Date().toISOString().slice(0, 10);
+    state.sideQuests[activeSideQuestKey] = { earned: true, date: today };
+    persist();
+    recompute();
+    closeModal();
+    showToast(`Side Quest complete! +${sq.xp_reward} XP ⚔️`);
+    QuestConfetti.burst({ count: 130, spread: 1.2 });
+    renderAll();
+    if (derived.currentRank.name !== prevRank) {
+      setTimeout(() => showRankUp(derived.currentRank.name), 700);
+    }
+  }
+
   function renderBadges() {
     const grid = $('badgeGrid');
     grid.innerHTML = '';
@@ -611,8 +683,10 @@
     $('boardCompletedCount').textContent = derived.completedCount;
     const trail = $('questTrail');
     trail.innerHTML = '';
+    const sideQuestDefs = questData.side_quests || [];
     for (let i = 0; i < QuestXP.TOTAL_SESSIONS; i++) {
       const slot = QuestXP.slotForIndex(i);
+      const phase = QuestXP.phaseForWeek(questData, slot.week);
       const done = derived.completedIndexes.has(i);
       const isNext = i === derived.nextProgramIndex && !derived.programComplete;
       const isWeeklyMarker = (i + 1) % 3 === 0;
@@ -623,7 +697,37 @@
       stop.title = `Week ${slot.week} · Day ${slot.day}${done ? ' — done' : ''}`;
       stop.innerHTML = `<span>${i + 1}</span>${isWeeklyMarker ? '<span class="stop-star">★</span>' : ''}`;
       trail.appendChild(stop);
+
+      // A Side Quest node rides along right after the last stop of its phase.
+      if (phase) {
+        const [, hi] = phase.weeks.split('-').map(Number);
+        if (slot.week === hi && slot.day === 'C') {
+          const def = sideQuestDefs.find((sq) => sq.phase_id === phase.id);
+          if (def) trail.appendChild(sideQuestNode(def, phase));
+        }
+      }
     }
+  }
+
+  function sideQuestNode(def, phase) {
+    const [lo] = phase.weeks.split('-').map(Number);
+    const phaseStartIndex = (lo - 1) * 3;
+    const entered = derived.nextProgramIndex >= phaseStartIndex;
+    const earned = !!(state.sideQuests[def.key] && state.sideQuests[def.key].earned);
+
+    const node = document.createElement('button');
+    node.className = 'side-quest-node' + (earned ? ' earned' : entered ? ' available' : ' locked');
+    node.style.setProperty('--sq-color', phase.color);
+    node.innerHTML = `<span class="sq-node-icon">${earned ? '🏆' : '⚔️'}</span><span class="sq-node-label">${def.name}</span>`;
+    node.title = entered ? def.name : `Unlocks in Phase ${phase.id}`;
+    node.addEventListener('click', () => {
+      if (!entered) {
+        showToast(`Unlocks once you reach Phase ${phase.id}.`);
+        return;
+      }
+      openSideQuestModal(def.key);
+    });
+    return node;
   }
 
   /* ---------------------------------------------------------------------

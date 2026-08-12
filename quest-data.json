@@ -42,8 +42,43 @@
     "xp_per_completed_session": 10,
     "weekly_full_attendance_bonus": 15,
     "badge_bonus_xp": 25,
+    "side_quest_bonus_xp": 25,
     "note": "At consistent 3x/week attendance plus badges earned along the way, Master of the Forge lands around the end of Week 12."
   },
+  "side_quests": [
+    {
+      "key": "the_gauntlet",
+      "phase_id": 1,
+      "name": "The Gauntlet",
+      "tagline": "Extra-credit conditioning — optional, and not for the faint of heart.",
+      "xp_reward": 25,
+      "steps": [
+        { "label": "3 rounds", "detail": "20 jumping jacks, 15 mountain climbers, 10 step-ups per leg (aerobics step)" },
+        { "label": "Capper", "detail": "Plank hold — beat your PR" }
+      ]
+    },
+    {
+      "key": "run_with_endurance",
+      "phase_id": 2,
+      "name": "Run with Endurance",
+      "tagline": "Extra-credit conditioning — optional, and not for the faint of heart.",
+      "xp_reward": 25,
+      "steps": [
+        { "label": "Run", "detail": "1.5 miles, for time — log it as your PR" }
+      ]
+    },
+    {
+      "key": "slay_the_dragon",
+      "phase_id": 3,
+      "name": "Slay the Dragon, Get the Girl",
+      "tagline": "Extra-credit conditioning — optional, and not for the faint of heart.",
+      "xp_reward": 25,
+      "steps": [
+        { "label": "10 shuttle runs", "detail": "115 ft each way, burpee at the far end of every shuttle" },
+        { "label": "Capper", "detail": "Farmer's carry across the yard at 80% of your PR (extra distance already in your legs)" }
+      ]
+    }
+  ],
   "ranks": [
     {
       "name": "Recruit",
