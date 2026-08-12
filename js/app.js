@@ -39,6 +39,7 @@
     wirePin();
 
     renderAll();
+    showView('today');
     registerServiceWorker();
   }
 
