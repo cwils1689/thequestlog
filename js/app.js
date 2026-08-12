@@ -162,21 +162,19 @@
       : `+${questData.xp_rules.xp_per_completed_session} XP`;
   }
 
-  function roundsText(phase, week) {
-    if (!phase || !phase.rounds_note) return '';
-    if (phase.id === 1) {
-      return week <= 2 ? '2 rounds through the list today' : '3 rounds through the list today';
-    }
-    return phase.rounds_note;
+  // Every phase follows the same escalation: 2 rounds through the first
+  // half of its weeks, 3 rounds through the second half — derived from the
+  // phase's own "weeks" range (e.g. "5-8"), not hardcoded to any one phase.
+  function roundsCount(phase, week) {
+    if (!phase) return 1;
+    const [lo, hi] = phase.weeks.split('-').map(Number);
+    const half = Math.floor((hi - lo + 1) / 2);
+    return (week - lo) < half ? 2 : 3;
   }
 
-  // How many rounds through the main exercise list for this phase/week —
-  // drives how many taps a checkbox takes to go from empty to fully done.
-  // Only Phase 1 currently specifies multiple rounds in quest-data.json;
-  // everything else is a single pass.
-  function roundsCount(phase, week) {
-    if (phase && phase.id === 1) return week <= 2 ? 2 : 3;
-    return 1;
+  function roundsText(phase, week) {
+    if (!phase) return '';
+    return `${roundsCount(phase, week)} rounds through the list today`;
   }
 
   function renderExerciseList(ul, items, showSlot, checkSection, maxRounds) {
