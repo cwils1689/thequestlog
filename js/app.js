@@ -215,11 +215,17 @@
         nameEl.appendChild(badge);
       }
       left.appendChild(nameEl);
+
+      const right = document.createElement('span');
+      right.className = 'exercise-right';
       const reps = document.createElement('span');
       reps.className = 'exercise-reps';
       reps.textContent = it.reps || it.dose || '';
+      right.appendChild(reps);
+      right.appendChild(watchButton(it.exercise || it.name, true));
+
       li.appendChild(left);
-      li.appendChild(reps);
+      li.appendChild(right);
       ul.appendChild(li);
     });
   }
@@ -391,6 +397,30 @@
     return `https://www.youtube.com/results?search_query=${encodeURIComponent(base + ' exercise tutorial')}`;
   }
 
+  function openExerciseVideo(name) {
+    window.open(youtubeSearchUrl(name), '_blank', 'noopener,noreferrer');
+  }
+
+  function watchButton(name, iconOnly) {
+    const link = document.createElement('a');
+    link.className = 'watch-link' + (iconOnly ? ' watch-link-icon' : '');
+    link.href = youtubeSearchUrl(name);
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = iconOnly ? '▶' : '▶ Watch';
+    link.setAttribute('aria-label', 'Watch a demo of ' + displayName(name));
+    link.addEventListener('click', (e) => {
+      // Stop this from bubbling into a parent checkable <li>'s toggle
+      // handler, and drive navigation explicitly so it reliably opens in a
+      // new window even where a plain target="_blank" can be unreliable
+      // (e.g. an installed/standalone PWA).
+      e.preventDefault();
+      e.stopPropagation();
+      openExerciseVideo(name);
+    });
+    return link;
+  }
+
   function exerciseIndexRow(it) {
     const name = it.exercise || it.name;
     const dose = it.reps || it.dose || '';
@@ -411,15 +441,9 @@
     const reps = document.createElement('span');
     reps.className = 'exercise-reps';
     reps.textContent = dose;
-    const link = document.createElement('a');
-    link.className = 'watch-link';
-    link.href = youtubeSearchUrl(name);
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.textContent = '▶ Watch';
     li.appendChild(left);
     li.appendChild(reps);
-    li.appendChild(link);
+    li.appendChild(watchButton(name, false));
     return li;
   }
 

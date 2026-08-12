@@ -31,7 +31,7 @@ boolean.
   gate "Session complete!" (showing up still earns XP regardless of checkbox
   state, per the program's no-performance-gating rule).
 
-## 2. YouTube links + quick-access Play buttons on Today
+## 2. YouTube links + quick-access Play buttons on Today — DONE (uncommitted)
 
 - Exercise Index's "▶ Watch" links already set `target="_blank"` — confirm
   whether the reported same-window behavior is a PWA/installed-app quirk

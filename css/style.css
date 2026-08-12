@@ -178,13 +178,14 @@ p { margin: 0 0 8px; }
 /* ---------------- Exercise lists ---------------- */
 .exercise-list { display: flex; flex-direction: column; gap: 10px; }
 .exercise-list li {
-  display: flex; justify-content: space-between; align-items: baseline;
-  gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--line-grey);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 8px 10px; padding: 8px 0; border-bottom: 1px dashed var(--line-grey);
 }
 .exercise-list li:last-child { border-bottom: none; }
 .exercise-slot { font-size: 11px; text-transform: uppercase; color: var(--ink-soft); font-weight: 700; letter-spacing: 0.4px; display: block; }
 .exercise-name { font-size: 15px; font-weight: 600; }
 .exercise-reps { font-family: var(--font-display); font-weight: 700; color: var(--gold-deep); white-space: nowrap; font-size: 15px; }
+.exercise-right { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; margin-left: auto; }
 .exercise-list.big .exercise-name { font-size: 17px; }
 .exercise-list.big .exercise-reps { font-size: 17px; }
 .new-badge { font-size: 10px; background: var(--gold); color: var(--ink); border-radius: 6px; padding: 1px 6px; margin-left: 6px; vertical-align: middle; }
@@ -229,6 +230,11 @@ p { margin: 0 0 8px; }
   padding: 6px 12px; border-radius: 999px; white-space: nowrap;
 }
 .watch-link:active { background: var(--gold); }
+.watch-link-icon {
+  width: 32px; height: 32px; padding: 0; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; line-height: 1;
+}
 
 /* ---------------- Buttons ---------------- */
 .btn {
