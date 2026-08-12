@@ -13,8 +13,10 @@
   const $ = (id) => document.getElementById(id);
 
   // Display-only cleanup: quest-data.json stays verbatim (source of truth),
-  // this just hides parenthetical detail when showing a name on screen.
-  const displayName = (name) => name.replace(/\s*\([^)]*\)/g, '').trim();
+  // this just trims extra load/detail off a name for on-screen display —
+  // early phases put it in parens ("Foo (bar)"), later phases after a
+  // comma ("Foo, bar") — either way, keep only what's before the first one.
+  const displayName = (name) => name.split('(')[0].split(',')[0].trim();
 
   /* ---------------------------------------------------------------------
      Boot
@@ -401,10 +403,7 @@
      Exercise Index — quick video reference for every move in the program
      --------------------------------------------------------------------- */
   function youtubeSearchUrl(name) {
-    // Strip parenthetical/comma detail so the search stays on the core move
-    // (e.g. "Goblet squat, 5-10 lb DB" -> "Goblet squat").
-    const base = name.split('(')[0].split(',')[0].trim();
-    return `https://www.youtube.com/results?search_query=${encodeURIComponent(base + ' exercise tutorial')}`;
+    return `https://www.youtube.com/results?search_query=${encodeURIComponent(displayName(name) + ' exercise tutorial')}`;
   }
 
   function openExerciseVideo(name) {
