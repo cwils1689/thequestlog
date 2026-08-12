@@ -63,8 +63,17 @@ Then open the printed URL.
   session's date falls in, matching "3 sessions in a week," not the
   program's week number — so redoing or backdating a session still works
   sensibly.
-- Badges are self-reported (tap "I did it!"); there's no sensor validating
-  form, by design.
+- Badges are self-reported (tap "I did it!") but gated behind a **parent
+  PIN** (Settings → Parent Controls). First badge attempt with no PIN set
+  prompts to create one; every attempt after that requires entering it.
+  The PIN is hashed (`SHA-256` via WebCrypto) before it's stored in
+  `localStorage` — not a real security boundary (nothing client-side is),
+  just a "stop and ask a grown-up" speed bump. **Resetting progress does
+  not clear the PIN**, so reset can't be used to bypass it.
+- Each exercise on the Today screen can be tapped to check it off mid-set.
+  These checks are a session-scoped convenience only (not saved) — they
+  reset whenever you switch session slots, since "showing up" (not
+  checkbox completion) is what earns XP.
 
 ## Known trade-offs (flagged, not blocking)
 
@@ -75,3 +84,7 @@ Then open the printed URL.
 - `apple-touch-icon` points at an SVG; iOS may not use it for the home
   screen icon on older versions (Android/Chrome handles SVG manifest icons
   fine). Swap in PNG icons later if that matters for the target device.
+- **Exercise Index** video links open a YouTube *search* for each move
+  (e.g. "Dead bug exercise tutorial") rather than one hand-picked video —
+  reliable and never a dead link, but not curated. Say the word if you'd
+  rather have specific videos picked and verified per exercise.

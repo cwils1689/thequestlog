@@ -68,8 +68,6 @@
           <ul class="exercise-list" id="cooldownList"></ul>
         </details>
 
-        <button class="btn btn-ghost btn-block" id="focusViewBtn">📋 Quick-reference view</button>
-
         <button class="btn btn-primary btn-huge" id="completeSessionBtn">
           <span class="btn-huge-label">Session complete!</span>
           <span class="btn-huge-sub" id="completeSessionSub">+10 XP</span>
@@ -114,6 +112,15 @@
       </div>
     </section>
 
+    <!-- EXERCISE INDEX -->
+    <section class="view" id="view-exercises" data-view="exercises">
+      <div class="view-inner">
+        <h2 class="view-title">📚 Exercise Index</h2>
+        <p class="view-subtitle">Tap ▶ Watch to see a video demo of any move.</p>
+        <div id="exerciseIndexList"></div>
+      </div>
+    </section>
+
     <!-- QUEST BOARD -->
     <section class="view" id="view-board" data-view="board">
       <div class="view-inner">
@@ -154,6 +161,14 @@
           </label>
         </div>
 
+        <div class="card">
+          <h3 class="section-title">Parent Controls</h3>
+          <p class="hint" id="pinStatusHint">No parent PIN set yet — badges can be granted freely until you set one.</p>
+          <button class="btn btn-secondary btn-block" id="setPinBtn">🔒 Set parent PIN</button>
+          <button class="btn btn-secondary btn-block" id="changePinBtn" hidden>🔒 Change parent PIN</button>
+          <button class="btn btn-ghost btn-block" id="removePinBtn" hidden>Remove parent PIN</button>
+        </div>
+
         <div class="card danger-card">
           <h3 class="section-title">Reset</h3>
           <p class="hint">Wipes all sessions, XP, and badges on this device. This can't be undone (unless you've exported a backup).</p>
@@ -174,6 +189,7 @@
     <button class="nav-btn active" data-nav="today"><span class="nav-icon">🏠</span><span>Today</span></button>
     <button class="nav-btn" data-nav="rank"><span class="nav-icon">🚀</span><span>Rank</span></button>
     <button class="nav-btn" data-nav="badges"><span class="nav-icon">🎖️</span><span>Badges</span></button>
+    <button class="nav-btn" data-nav="exercises"><span class="nav-icon">📚</span><span>Moves</span></button>
     <button class="nav-btn" data-nav="board"><span class="nav-icon">🗺️</span><span>Board</span></button>
     <button class="nav-btn" data-nav="history"><span class="nav-icon">📜</span><span>History</span></button>
     <button class="nav-btn" data-nav="settings"><span class="nav-icon">⚙️</span><span>Settings</span></button>
@@ -250,10 +266,22 @@
     </div>
   </div>
 
-  <div class="modal modal-wide" id="modalFocus" hidden>
-    <button class="icon-btn modal-close-x" id="focusCloseBtn" aria-label="Close">✕</button>
-    <h3 id="focusTitle">Day A — Week 1</h3>
-    <ul class="exercise-list huge" id="focusExerciseList"></ul>
+  <div class="modal" id="modalPin" hidden>
+    <h3 id="pinTitle">Set Parent PIN</h3>
+    <p class="hint" id="pinSubtitle"></p>
+    <div class="modal-select-row" style="flex-direction: column;">
+      <label>PIN
+        <input type="password" id="pinInput" inputmode="numeric" autocomplete="off" />
+      </label>
+      <label id="pinConfirmRow">Confirm PIN
+        <input type="password" id="pinConfirmInput" inputmode="numeric" autocomplete="off" />
+      </label>
+    </div>
+    <p class="hint" id="pinError" style="color: var(--day-c); min-height: 16px;"></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="pinCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="pinSubmitBtn">Save</button>
+    </div>
   </div>
 
 </div>

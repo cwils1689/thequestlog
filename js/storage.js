@@ -10,6 +10,10 @@
       version: SCHEMA_VERSION,
       sessions: [],   // { id, programIndex, dateISO, loggedAt }
       badges: {},     // { [badgeKey]: { earned: bool, date: 'YYYY-MM-DD' } }
+      settings: {
+        badgePinHash: null, // hex SHA-256(salt + ':' + pin), or null = no parent gate yet
+        badgePinSalt: null, // hex random salt
+      },
     };
   }
 
@@ -23,6 +27,7 @@
       const state = Object.assign(defaultState(), parsed);
       if (!Array.isArray(state.sessions)) state.sessions = [];
       if (!state.badges || typeof state.badges !== 'object') state.badges = {};
+      if (!state.settings || typeof state.settings !== 'object') state.settings = defaultState().settings;
       return state;
     } catch (e) {
       console.warn('Quest Log: could not read saved progress, starting fresh.', e);
@@ -51,6 +56,7 @@
     }
     const state = Object.assign(defaultState(), parsed);
     if (!state.badges || typeof state.badges !== 'object') state.badges = {};
+    if (!state.settings || typeof state.settings !== 'object') state.settings = defaultState().settings;
     return state;
   }
 

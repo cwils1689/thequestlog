@@ -36,6 +36,7 @@
     wireHistory();
     wireSettings();
     wireModals();
+    wirePin();
 
     renderAll();
     registerServiceWorker();
@@ -54,8 +55,10 @@
     renderToday();
     renderRank();
     renderBadges();
+    renderExerciseIndex();
     renderBoard();
     renderHistory();
+    renderSettings();
   }
 
   /* ---------------------------------------------------------------------
@@ -98,7 +101,6 @@
       renderToday();
     });
     $('completeSessionBtn').addEventListener('click', completeSession);
-    $('focusViewBtn').addEventListener('click', openFocusView);
 
     document.querySelector('.today-picker-label').addEventListener('click', openDaySelectModal);
     $('daySelectCancel').addEventListener('click', closeModal);
@@ -119,10 +121,18 @@
     openModal('modalDaySelect');
   }
 
+  let lastRenderedIndex = null;
+  let todayChecks = {}; // key: `${section}_${itemIndex}` -> bool, reset when the selected slot changes
+
   function renderToday() {
     const slot = QuestXP.slotForIndex(selectedProgramIndex);
     const { phase, exercises } = QuestXP.exercisesFor(questData, slot.week, slot.day);
     const meta = questData.days_meta[slot.day];
+
+    if (selectedProgramIndex !== lastRenderedIndex) {
+      todayChecks = {};
+      lastRenderedIndex = selectedProgramIndex;
+    }
 
     $('pickerPhase').textContent = phase ? `Phase ${phase.id} · ${phase.name}` : '';
     $('pickerWeekDay').textContent = `Week ${slot.week} — ${meta.label}`;
@@ -134,9 +144,9 @@
     $('dayFocusChip').textContent = `${meta.label} · ${meta.focus}`;
     $('dayRoundsNote').textContent = roundsText(phase, slot.week);
 
-    renderExerciseList($('warmupList'), questData.warmup, false);
-    renderExerciseList($('exerciseList'), exercises, true);
-    renderExerciseList($('cooldownList'), questData.cooldown, false);
+    renderExerciseList($('warmupList'), questData.warmup, false, 'warmup');
+    renderExerciseList($('exerciseList'), exercises, true, 'main');
+    renderExerciseList($('cooldownList'), questData.cooldown, false, 'cooldown');
 
     const alreadyDone = derived.completedIndexes.has(selectedProgramIndex);
     const label = alreadyDone ? 'Log another go at this quest!' : 'Session complete!';
@@ -155,11 +165,35 @@
     return phase.rounds_note;
   }
 
-  function renderExerciseList(ul, items, showSlot) {
+  function renderExerciseList(ul, items, showSlot, checkSection) {
     ul.innerHTML = '';
-    items.forEach((it) => {
+    items.forEach((it, idx) => {
       const li = document.createElement('li');
+      const checkKey = checkSection ? `${checkSection}_${idx}` : null;
+      const checked = checkKey ? !!todayChecks[checkKey] : false;
+
+      if (checkSection) {
+        li.className = 'checkable' + (checked ? ' checked' : '');
+        const box = document.createElement('span');
+        box.className = 'exercise-check';
+        box.setAttribute('aria-hidden', 'true');
+        box.textContent = checked ? '✓' : '';
+        li.appendChild(box);
+        li.setAttribute('role', 'checkbox');
+        li.setAttribute('aria-checked', String(checked));
+        li.tabIndex = 0;
+        const toggle = () => {
+          todayChecks[checkKey] = !todayChecks[checkKey];
+          renderExerciseList(ul, items, showSlot, checkSection);
+        };
+        li.addEventListener('click', toggle);
+        li.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+        });
+      }
+
       const left = document.createElement('span');
+      left.className = 'exercise-text';
       if (showSlot && it.slot) {
         const slotEl = document.createElement('span');
         slotEl.className = 'exercise-slot';
@@ -222,15 +256,6 @@
     }
   }
 
-  function openFocusView() {
-    const slot = QuestXP.slotForIndex(selectedProgramIndex);
-    const { exercises } = QuestXP.exercisesFor(questData, slot.week, slot.day);
-    const meta = questData.days_meta[slot.day];
-    $('focusTitle').textContent = `${meta.label} — Week ${slot.week}`;
-    renderExerciseList($('focusExerciseList'), exercises, true);
-    openModal('modalFocus');
-  }
-
   /* ---------------------------------------------------------------------
      XP & Rank
      --------------------------------------------------------------------- */
@@ -285,7 +310,7 @@
 
   function wireBadges() {
     $('modalBadgeClose').addEventListener('click', closeModal);
-    $('modalBadgeEarn').addEventListener('click', earnActiveBadge);
+    $('modalBadgeEarn').addEventListener('click', attemptEarnBadge);
   }
 
   function renderBadges() {
@@ -323,7 +348,19 @@
     openModal('modalBadge');
   }
 
-  function earnActiveBadge() {
+  function attemptEarnBadge() {
+    if (!activeBadgeKey) return;
+    if (!state.settings.badgePinHash) {
+      openPinCreate(
+        'Set a parent PIN to approve badges — one only a grown-up knows. This badge will be granted once it\'s set.',
+        grantActiveBadge
+      );
+    } else {
+      openPinVerify('Enter the parent PIN to approve this badge.', grantActiveBadge);
+    }
+  }
+
+  function grantActiveBadge() {
     if (!activeBadgeKey) return;
     const prevRank = derived.currentRank.name;
     const today = new Date().toISOString().slice(0, 10);
@@ -337,6 +374,196 @@
     if (derived.currentRank.name !== prevRank) {
       setTimeout(() => showRankUp(derived.currentRank.name), 700);
     }
+  }
+
+  /* ---------------------------------------------------------------------
+     Exercise Index — quick video reference for every move in the program
+     --------------------------------------------------------------------- */
+  function youtubeSearchUrl(name) {
+    // Strip parenthetical/comma detail so the search stays on the core move
+    // (e.g. "Goblet squat, 5-10 lb DB" -> "Goblet squat").
+    const base = name.split('(')[0].split(',')[0].trim();
+    return `https://www.youtube.com/results?search_query=${encodeURIComponent(base + ' exercise tutorial')}`;
+  }
+
+  function exerciseIndexRow(it) {
+    const name = it.exercise || it.name;
+    const dose = it.reps || it.dose || '';
+    const li = document.createElement('li');
+    li.className = 'index-row';
+    const left = document.createElement('span');
+    left.className = 'exercise-text';
+    if (it.slot) {
+      const slotEl = document.createElement('span');
+      slotEl.className = 'exercise-slot';
+      slotEl.textContent = it.slot;
+      left.appendChild(slotEl);
+    }
+    const nameEl = document.createElement('span');
+    nameEl.className = 'exercise-name';
+    nameEl.textContent = name;
+    left.appendChild(nameEl);
+    const reps = document.createElement('span');
+    reps.className = 'exercise-reps';
+    reps.textContent = dose;
+    const link = document.createElement('a');
+    link.className = 'watch-link';
+    link.href = youtubeSearchUrl(name);
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = '▶ Watch';
+    li.appendChild(left);
+    li.appendChild(reps);
+    li.appendChild(link);
+    return li;
+  }
+
+  function indexSection(title, items) {
+    const details = document.createElement('details');
+    details.className = 'card collapsible index-section';
+    const summary = document.createElement('summary');
+    summary.textContent = title;
+    const ul = document.createElement('ul');
+    ul.className = 'exercise-list index-list';
+    items.forEach((it) => ul.appendChild(exerciseIndexRow(it)));
+    details.appendChild(summary);
+    details.appendChild(ul);
+    return details;
+  }
+
+  function renderExerciseIndex() {
+    const root = $('exerciseIndexList');
+    if (!root) return;
+    root.innerHTML = '';
+    root.appendChild(indexSection('🔥 Warm-up', questData.warmup));
+    root.appendChild(indexSection('🧊 Cooldown', questData.cooldown));
+    questData.phases.forEach((phase) => {
+      const details = document.createElement('details');
+      details.className = 'card collapsible index-section';
+      const summary = document.createElement('summary');
+      summary.textContent = `Phase ${phase.id} · ${phase.name} (Weeks ${phase.weeks})`;
+      details.appendChild(summary);
+      QuestXP.DAY_LETTERS.forEach((day) => {
+        const meta = questData.days_meta[day];
+        const heading = document.createElement('h4');
+        heading.className = 'index-subheading';
+        heading.textContent = `${meta.label} · ${meta.focus}`;
+        const ul = document.createElement('ul');
+        ul.className = 'exercise-list index-list';
+        (phase.days[day] || []).forEach((it) => ul.appendChild(exerciseIndexRow(it)));
+        details.appendChild(heading);
+        details.appendChild(ul);
+      });
+      root.appendChild(details);
+    });
+  }
+
+  /* ---------------------------------------------------------------------
+     Parent PIN — gates badge approval behind a PIN only a parent knows.
+     Not a real security boundary (everything here is client-side and
+     inspectable), just a "stop and ask a grown-up" speed bump.
+     --------------------------------------------------------------------- */
+  let pinMode = 'create'; // 'create' | 'verify'
+  let pinResolveCallback = null;
+
+  function randomHex(byteLen) {
+    const arr = new Uint8Array(byteLen);
+    if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(arr);
+    else for (let i = 0; i < byteLen; i++) arr[i] = Math.floor(Math.random() * 256);
+    return Array.from(arr).map((b) => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  async function hashPin(pin, salt) {
+    if (window.crypto && crypto.subtle && crypto.subtle.digest) {
+      const data = new TextEncoder().encode(salt + ':' + pin);
+      const buf = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+    // Fallback for browsers without SubtleCrypto — fine here since this is a
+    // speed bump, not a security boundary.
+    let h = 0;
+    const str = salt + ':' + pin;
+    for (let i = 0; i < str.length; i++) h = (h << 5) - h + str.charCodeAt(i) | 0;
+    return 'fb_' + (h >>> 0).toString(16);
+  }
+
+  function wirePin() {
+    $('pinCancelBtn').addEventListener('click', () => {
+      pinResolveCallback = null;
+      closeModal();
+    });
+    $('pinSubmitBtn').addEventListener('click', submitPinModal);
+  }
+
+  function openPinCreate(subtitle, onSuccess) {
+    pinMode = 'create';
+    pinResolveCallback = onSuccess;
+    $('pinTitle').textContent = 'Set Parent PIN';
+    $('pinSubtitle').textContent = subtitle || 'Choose a PIN only a parent knows — you\'ll enter it to approve badges.';
+    $('pinConfirmRow').hidden = false;
+    $('pinInput').value = '';
+    $('pinConfirmInput').value = '';
+    $('pinError').textContent = '';
+    openModal('modalPin');
+  }
+
+  function openPinVerify(subtitle, onSuccess) {
+    pinMode = 'verify';
+    pinResolveCallback = onSuccess;
+    $('pinTitle').textContent = 'Enter Parent PIN';
+    $('pinSubtitle').textContent = subtitle || 'Enter the parent PIN to continue.';
+    $('pinConfirmRow').hidden = true;
+    $('pinInput').value = '';
+    $('pinConfirmInput').value = '';
+    $('pinError').textContent = '';
+    openModal('modalPin');
+  }
+
+  async function submitPinModal() {
+    const pin = $('pinInput').value.trim();
+    if (pin.length < 4) {
+      $('pinError').textContent = 'PIN needs to be at least 4 characters.';
+      return;
+    }
+    if (pinMode === 'create') {
+      const confirmVal = $('pinConfirmInput').value.trim();
+      if (pin !== confirmVal) {
+        $('pinError').textContent = 'PINs don\'t match — try again.';
+        return;
+      }
+      const salt = randomHex(16);
+      const hash = await hashPin(pin, salt);
+      state.settings.badgePinHash = hash;
+      state.settings.badgePinSalt = salt;
+      persist();
+      const cb = pinResolveCallback;
+      pinResolveCallback = null;
+      closeModal();
+      renderSettings();
+      if (cb) cb();
+    } else {
+      const hash = await hashPin(pin, state.settings.badgePinSalt || '');
+      if (hash !== state.settings.badgePinHash) {
+        $('pinError').textContent = 'That\'s not the right PIN.';
+        $('pinInput').value = '';
+        $('pinInput').focus();
+        return;
+      }
+      const cb = pinResolveCallback;
+      pinResolveCallback = null;
+      closeModal();
+      if (cb) cb();
+    }
+  }
+
+  function renderSettings() {
+    const hasPin = !!(state.settings && state.settings.badgePinHash);
+    $('setPinBtn').hidden = hasPin;
+    $('changePinBtn').hidden = !hasPin;
+    $('removePinBtn').hidden = !hasPin;
+    $('pinStatusHint').textContent = hasPin
+      ? 'A parent PIN is set — badges require approval to grant.'
+      : 'No parent PIN set yet — badges can be granted freely until you set one.';
   }
 
   /* ---------------------------------------------------------------------
@@ -466,6 +693,26 @@
     $('resetBtn').addEventListener('click', () => {
       openConfirm('Reset all progress?', 'This wipes every session, badge, and XP point on this device. Export a backup first if you want to keep it.', doReset);
     });
+    $('setPinBtn').addEventListener('click', () => {
+      openPinCreate(
+        'Choose a PIN only a parent knows. You\'ll enter it each time a badge is granted.',
+        () => showToast('Parent PIN set.')
+      );
+    });
+    $('changePinBtn').addEventListener('click', () => {
+      openPinVerify('Enter the current PIN to change it.', () => {
+        openPinCreate('Choose a new parent PIN.', () => showToast('Parent PIN updated.'));
+      });
+    });
+    $('removePinBtn').addEventListener('click', () => {
+      openPinVerify('Enter the PIN to remove parent approval.', () => {
+        state.settings.badgePinHash = null;
+        state.settings.badgePinSalt = null;
+        persist();
+        renderSettings();
+        showToast('Parent PIN removed — badges no longer require approval.');
+      });
+    });
   }
 
   function exportProgress() {
@@ -508,7 +755,11 @@
   }
 
   function doReset() {
+    // Preserve the parent PIN across a reset — otherwise "Reset all progress"
+    // would double as a way to clear the badge-approval gate.
+    const keepSettings = state.settings;
     state = QuestStorage.defaultState();
+    state.settings = keepSettings;
     persist();
     recompute();
     selectedProgramIndex = derived.nextProgramIndex;
@@ -530,7 +781,6 @@
       confirmCallback = null;
       if (cb) cb();
     });
-    $('focusCloseBtn').addEventListener('click', closeModal);
     $('rankupCloseBtn').addEventListener('click', () => { $('rankupBanner').hidden = true; });
   }
 

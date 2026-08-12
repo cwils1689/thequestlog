@@ -187,10 +187,48 @@ p { margin: 0 0 8px; }
 .exercise-reps { font-family: var(--font-display); font-weight: 700; color: var(--gold-deep); white-space: nowrap; font-size: 15px; }
 .exercise-list.big .exercise-name { font-size: 17px; }
 .exercise-list.big .exercise-reps { font-size: 17px; }
-.exercise-list.huge .exercise-name { font-size: 22px; }
-.exercise-list.huge .exercise-reps { font-size: 22px; }
-.exercise-list.huge li { padding: 14px 0; }
 .new-badge { font-size: 10px; background: var(--gold); color: var(--ink); border-radius: 6px; padding: 1px 6px; margin-left: 6px; vertical-align: middle; }
+
+/* Checkable exercises (Today view) */
+.exercise-list li.checkable { cursor: pointer; align-items: center; }
+.exercise-list li.checkable .exercise-text { flex: 1; }
+.exercise-check {
+  flex: 0 0 auto;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--line-grey);
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 15px;
+  color: transparent;
+  margin-right: 4px;
+}
+.exercise-list li.checkable.checked .exercise-check {
+  background: var(--phase-1); border-color: var(--phase-1); color: #fff;
+}
+.exercise-list li.checkable.checked .exercise-name,
+.exercise-list li.checkable.checked .exercise-reps {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+
+/* Exercise Index */
+.index-section summary { padding: 2px 0; }
+.index-subheading {
+  margin: 14px 0 6px; font-size: 12px; text-transform: uppercase;
+  letter-spacing: 0.4px; color: var(--ink-soft);
+}
+.index-list { margin-top: 8px; }
+.index-row { flex-wrap: wrap; gap: 6px 10px; }
+.index-row .exercise-text { flex: 1 1 auto; min-width: 140px; }
+.watch-link {
+  flex: 0 0 auto;
+  background: var(--paper-dim); border: 1px solid var(--line-grey);
+  color: var(--ink); text-decoration: none; font-weight: 700;
+  font-family: var(--font-display); font-size: 12px;
+  padding: 6px 12px; border-radius: 999px; white-space: nowrap;
+}
+.watch-link:active { background: var(--gold); }
 
 /* ---------------- Buttons ---------------- */
 .btn {
@@ -347,9 +385,6 @@ p { margin: 0 0 8px; }
 }
 .modal-badge-icon img { width: 120px; height: 120px; object-fit: contain; }
 .modal-badge-status { font-weight: 700; color: var(--gold-deep); }
-.modal-close-x {
-  position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; font-size: 16px;
-}
 
 /* ---------------- Toast / celebration ---------------- */
 .toast {
