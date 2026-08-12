@@ -353,13 +353,6 @@ p { margin: 0 0 8px; }
 .side-quest-node.locked { opacity: 0.5; cursor: default; border-style: dotted; }
 .side-quest-node.earned { background: var(--gold); border-style: solid; border-color: var(--gold-deep); }
 
-/* Side Quest modal */
-.side-quest-tag {
-  display: inline-block; font-family: var(--font-display); font-weight: 700;
-  font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
-  color: var(--gold-deep); margin-bottom: 4px;
-}
-
 /* ---------------- History ---------------- */
 .history-list { display: flex; flex-direction: column; gap: 8px; }
 .history-item {

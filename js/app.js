@@ -349,7 +349,7 @@
     const sq = (questData.side_quests || []).find((x) => x.key === key);
     if (!sq) return;
     const earned = state.sideQuests[key] && state.sideQuests[key].earned;
-    $('sqName').textContent = sq.name;
+    $('sqName').textContent = `Side Quest: ${sq.name}`;
     $('sqTagline').textContent = sq.tagline || '';
     const list = $('sqSteps');
     list.innerHTML = '';
@@ -718,7 +718,7 @@
     const node = document.createElement('button');
     node.className = 'side-quest-node' + (earned ? ' earned' : entered ? ' available' : ' locked');
     node.style.setProperty('--sq-color', phase.color);
-    node.innerHTML = `<span class="sq-node-icon">${earned ? '🏆' : '⚔️'}</span><span class="sq-node-label">${def.name}</span>`;
+    node.innerHTML = `<span class="sq-node-icon">${earned ? '🏆' : '⚔️'}</span><span class="sq-node-label">Side Quest: ${def.name}</span>`;
     node.title = entered ? def.name : `Unlocks in Phase ${phase.id}`;
     node.addEventListener('click', () => {
       if (!entered) {
