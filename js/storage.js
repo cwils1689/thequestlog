@@ -14,6 +14,7 @@
       settings: {
         badgePinHash: null, // hex SHA-256(salt + ':' + pin), or null = no parent gate yet
         badgePinSalt: null, // hex random salt
+        badgePinHint: null, // plaintext, optional — a memory jog, not a secret; shown before "Forgot your PIN?"
       },
     };
   }

@@ -665,6 +665,9 @@
     $('pinTitle').textContent = 'Set Parent PIN';
     $('pinSubtitle').textContent = subtitle || 'Choose a PIN only a parent knows — you\'ll enter it to approve badges.';
     $('pinConfirmRow').hidden = false;
+    $('pinHintRow').hidden = false;
+    $('pinHintInput').value = state.settings.badgePinHint || '';
+    $('pinHintDisplay').hidden = true;
     $('pinForgotBtn').hidden = true;
     $('pinInput').value = '';
     $('pinConfirmInput').value = '';
@@ -678,6 +681,13 @@
     $('pinTitle').textContent = 'Enter Parent PIN';
     $('pinSubtitle').textContent = subtitle || 'Enter the parent PIN to continue.';
     $('pinConfirmRow').hidden = true;
+    $('pinHintRow').hidden = true;
+    if (state.settings.badgePinHint) {
+      $('pinHintDisplay').textContent = `Hint: ${state.settings.badgePinHint}`;
+      $('pinHintDisplay').hidden = false;
+    } else {
+      $('pinHintDisplay').hidden = true;
+    }
     $('pinForgotBtn').hidden = false;
     $('pinInput').value = '';
     $('pinConfirmInput').value = '';
@@ -701,6 +711,7 @@
       const hash = await hashPin(pin, salt);
       state.settings.badgePinHash = hash;
       state.settings.badgePinSalt = salt;
+      state.settings.badgePinHint = $('pinHintInput').value.trim() || null;
       persist();
       const cb = pinResolveCallback;
       pinResolveCallback = null;

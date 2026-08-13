@@ -289,7 +289,11 @@
       <label id="pinConfirmRow">Confirm PIN
         <input type="password" id="pinConfirmInput" inputmode="numeric" autocomplete="off" />
       </label>
+      <label id="pinHintRow">Hint (optional — helps you remember it later)
+        <input type="text" id="pinHintInput" autocomplete="off" maxlength="60" />
+      </label>
     </div>
+    <p class="hint" id="pinHintDisplay" hidden></p>
     <p class="hint" id="pinError" style="color: var(--day-c); min-height: 16px;"></p>
     <button class="link-btn" id="pinForgotBtn" hidden>Forgot your PIN?</button>
     <div class="modal-actions">
