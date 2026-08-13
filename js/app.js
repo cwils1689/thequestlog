@@ -583,7 +583,12 @@
     const tier = currentMuscleTier();
     const colorKey = state.equippedItems.body_color;
     const colorItem = colorKey ? questData.shop_items.find((i) => i.key === colorKey) : null;
-    $('characterCanvas').innerHTML = QuestCharacter.renderSVG(tier, colorItem ? { bodyColor: colorItem.color } : undefined);
+    $('characterCanvas').innerHTML = QuestCharacter.renderSVG(tier, {
+      bodyColor: colorItem ? colorItem.color : undefined,
+      head: state.equippedItems.head,
+      accessory: state.equippedItems.accessory,
+      heldItem: derived.heldItem ? derived.heldItem.key : null,
+    });
 
     const heldEl = $('characterHeldItem');
     if (derived.heldItem) {

@@ -171,3 +171,56 @@ missed day.
      changes color; the full equip -> unequip -> re-equip toggle cycle
      works; everything persists across reload; Today's video play buttons
      still work unaffected; zero console errors throughout.
+4. **DONE — Item graphics.** All 14 previously-generic items now draw real
+   art onto the character SVG, closing the scope boundary from step 3.
+   `js/character.js`:
+   - `HEAD_ART` (5): scout_cap (olive beanie + brim), explorers_goggles
+     (strap + tinted lenses), winged_helm (steel dome + cream wings),
+     star_watcher_hood (navy hood, side drapes, gold star fleck on the
+     peak), forgemasters_crown (gold band, 3 spikes, red gem). All anchor
+     to the fixed head circle (`HEAD_CX/CY/R`), so — as designed in step
+     1 — they need zero per-tier repositioning.
+   - `ACCESSORY_BACK_ART`/`ACCESSORY_FRONT_ART` (5): capes/cloak drawn
+     *behind* legs/arms/torso so they read as fabric hanging off the
+     shoulders, peeking out at the sides and below rather than being
+     fully hidden by the body silhouette (travelers_cloak needed a second
+     pass — its first draft was narrower than the arms and nearly
+     invisible). star_trail_cape's white star accents likewise needed
+     repositioning into the flanking strip below the torso/arms, since
+     anywhere closer to center gets drawn over. champions_mantle adds a
+     front-layer fur collar + gold medallion.
+   - `HELD_ITEM_ART` (4): telescope, sword, battle_axe, hammer — anchored
+     to the character's right-hand point (derived from tier geometry, so
+     it tracks arm position across all 3 tiers) and drawn topmost/frontmost
+     with a slight outward rotation to read as "held." battle_axe's blade
+     needed a second pass (path-based crescent) after the first polygon
+     attempt read as a flag, not an axe head.
+   - `renderSVG(tier, options)` options grew `head`/`accessory`/`heldItem`
+     (equipped shop_item keys / rank free_item key); unknown or absent
+     keys draw nothing, so this is backward compatible with the body-color
+     -only call from step 3.
+   - `js/app.js`'s `renderCharacterPreview()` now passes
+     `state.equippedItems.head`, `.accessory`, and `derived.heldItem.key`
+     through, replacing the step-3 `bodyColor`-only call.
+   - Verified: every item rendered standalone and in tier 1/2/3 combos via
+     direct `QuestCharacter.renderSVG()` calls, rasterized to PNG and
+     visually inspected (not just "didn't throw") — caught and fixed the
+     invisible cloak and flag-shaped axe this way before they'd have
+     shipped. Also verified through the real app: seeded `localStorage`
+     with a fabricated 12-week/6-badge/1-side-quest history reaching
+     Master of the Forge, loaded the actual Armory screen, and confirmed
+     `characterHeldItem` read "Holding: Hammer" — i.e. the real
+     `state.equippedItems`/`derived.heldItem` wiring, not just the
+     isolated renderer, works end to end.
+   - **Follow-up fix, same session**: the first pass on the 4 non-goggle
+     head items (scout_cap, winged_helm, star_watcher_hood,
+     forgemasters_crown) sat too low — brim/band bottom edges landed at
+     y≈29-34 against eyes fixed at cy=32, so they visually blindfolded the
+     character. Pulled every hat's baseline up (brim/band bottom now
+     ≤y=26, ~4-6px clear of the eyes) so forehead shows between hat and
+     eyes on all 4. Left explorers_goggles untouched — goggles are
+     *supposed* to sit over the eyes. Re-verified at full render size
+     (rasterized PNG, not the small thumbnail grid — a small composite
+     thumbnail earlier made winged_helm's wings look broken/off-canvas;
+     that was a canvas-scaling artifact in the test harness, not the SVG,
+     confirmed by re-rendering that one item alone at full size).
