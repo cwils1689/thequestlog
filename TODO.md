@@ -1,56 +1,126 @@
 # The Quest Log — To-Do
 
-Backlog of requested changes, not yet implemented.
+Previous backlog (round-aware checkboxes, YouTube play buttons, parenthetical
+stripping) is done and committed — see git log. This file now tracks the
+next big feature.
 
 ---
 
-## 1. Account for rounds per day (exercise checkboxes) — DONE (uncommitted)
+## Character customization — "Armory" (design locked, not yet built)
 
-**Problem**: the program has the kid do multiple full passes ("rounds")
-through the exercise list per session, but each exercise's checkbox on Today
-is a single on/off toggle — checking it off once currently reads as "done for
-the day," with no way to represent "done round 1, still have round 2 (or 3)."
+Son's idea, workshopped into a concrete plan. **Design is settled below —
+next session should go straight to a build plan**, not another brainstorm.
 
-**Terminology note**: "cycle" = the app's existing `rounds_note` field in
-`quest-data.json`. That field currently only specifies a round count for
-Phase 1 (2 rounds weeks 1–2, 3 rounds weeks 3–4; `null`/unspecified for
-Phases 2–3, i.e. 1 round). **The checkbox state count must read the round
-count from that data per phase/week, not assume a hardcoded 2** — Phase 1
-weeks 3–4 needs 3 states, and Phases 2–3 arguably just need the existing
-plain on/off (1 round).
+### Core concept
 
-**Chosen approach — Option A, two-state tap cycle**: each checkbox cycles
-through N+1 visual states on tap (N = rounds for that phase/week: 1, 2, or
-3) — e.g. for a 2-round day: empty → half-filled ("1/2", round 1 done) →
-fully filled (round 2 done) → back to empty. Same single tap target per
-exercise as today, `todayChecks[key]` becomes an integer `0..N` instead of a
-boolean.
+A simple blocky/geometric character (SVG, built from basic shapes — matches
+the "original blocky-world" motif already in `design-tokens.json`, no
+imported art assets, no licensed-character risk) that visibly changes along
+**two independent progression axes**:
 
-- Keep this **session-scoped only**, same as today (resets when switching
-  session slots) — it's a mid-workout aid, not saved progress, and shouldn't
-  gate "Session complete!" (showing up still earns XP regardless of checkbox
-  state, per the program's no-performance-gating rule).
+1. **Muscle size ← Phase** (3 tiers: Recruit Training / Apprentice Trials /
+   Path to Mastery). Torso/arms/legs get visibly chunkier each phase — the
+   character's build mirrors the actual bodyweight → dumbbells → heavier
+   loads arc of the real program. **Head stays the same size across all 3
+   tiers** — keeps head-mounted accessories (hats) from needing per-tier
+   repositioning; only body-worn items (capes, shirts) need to account for
+   the size change.
+2. **Held item ← Rank** (free, automatic, not purchasable — guarantees a
+   visible change at every rank-up even if the shop is never touched):
 
-## 2. YouTube links + quick-access Play buttons on Today — DONE (uncommitted)
+   | Promotion into... | Free item |
+   |---|---|
+   | Trailblazer | Telescope |
+   | Adventurer | Sword |
+   | Vanguard | Battle axe |
+   | Master of the Forge | Hammer (forge callback, capstone item) |
 
-- Exercise Index's "▶ Watch" links already set `target="_blank"` — confirm
-  whether the reported same-window behavior is a PWA/installed-app quirk
-  (standalone-display apps can hijack `target="_blank"` into the same webview
-  on some platforms) and consider swapping to an explicit
-  `window.open(url, '_blank', 'noopener')` call as a more reliable
-  cross-platform fix if so.
-- Add a "▶" play/link button next to each exercise **on the Today screen
-  itself** (warm-up, main, cooldown), not just in the separate Exercise Index
-  tab — so a demo video is one tap away mid-workout without leaving Today.
-  Reuse the existing `youtubeSearchUrl()` helper in `js/app.js`.
+   (Recruit is the starting rank — no promotion moment, so no item there;
+   4 items for the 4 real rank-ups.)
 
-## 3. Strip parentheticals from displayed exercise names — DONE (uncommitted)
+### Currency — "Shards" (economy locked)
 
-- Exercise names from `quest-data.json` sometimes carry extra detail in
-  parens, e.g. "Bodyweight squat to bench (sit-to-stand, bench as depth
-  target)". Strip the `(...)` portion for on-screen display only.
-- Do this as a **display-layer helper**, not by editing `quest-data.json` —
-  the original build brief requires exercise content to match the data file
-  verbatim, so the source of truth should stay untouched; only the rendered
-  text gets cleaned up. (`youtubeSearchUrl()` already does something similar
-  for search-query cleanliness — a shared helper could serve both.)
+Second resource earned alongside XP on the same trigger events — no
+separate grind, no new actions to perform. **Spending is not PIN-gated** —
+the PIN already gated *earning* bonus currency at the point a badge/Side
+Quest was approved; re-gating spending it on cosmetics would be pure
+friction with no purpose.
+
+**Earn rates:**
+
+| Event | Shards |
+|---|---|
+| Session complete | +5 |
+| Weekly full-attendance bonus | +15 |
+| Badge earned | +35 |
+| Side Quest complete | +45 |
+
+Ceiling at perfect attendance/badges/Side Quests: 36×5 + 12×15 + 6×35 + 3×45
+= **705 Shards** over the 12 weeks.
+
+### Slots
+
+- **Cosmetic (Shards-purchasable, freely re-equippable, never lost once
+  bought)**: Head/hat, Body color, Accessory/cape.
+- **Held item (Rank-earned, automatic)**: separate from the shop entirely,
+  see table above — never purchasable, never lost.
+
+### Shop roster (15 items, 580 Shards to own everything)
+
+Deliberately priced so 705-Shard ceiling leaves ~125 Shards of slack above
+the 580 needed for the full collection — he does **not** need perfect
+attendance to own everything; he can miss real sessions/weeks and still
+afford it all before week 12, consistent with the app never punishing a
+missed day.
+
+**Head**
+| Item | Cost |
+|---|---|
+| Scout Cap | 10 |
+| Explorer's Goggles | 20 |
+| Winged Helm | 40 |
+| Star-Watcher Hood | 60 |
+| Forgemaster's Crown | 100 |
+
+**Body color**
+| Item | Cost |
+|---|---|
+| Sky Blue | 10 |
+| Ember Orange | 10 |
+| Moss Green | 10 |
+| Shadow Purple | 15 |
+| Gold Plate (metallic finish) | 50 |
+
+**Accessory / Cape**
+| Item | Cost |
+|---|---|
+| Traveler's Cloak | 15 |
+| Striped Scarf | 15 |
+| Battle Cape | 35 |
+| Star-Trail Cape (ties to the night-sky motif already in the app) | 70 |
+| Champion's Mantle | 120 |
+
+### UI placement
+
+- New **"Armory"** tab in the bottom nav, **replacing "Moves.**" Moves
+  (the Exercise Index) is being fully retired, not just hidden — now that
+  every exercise on Today has its own "▶" video link (built earlier this
+  project), the standalone browse-all-videos index is redundant. Same
+  treatment as the old Quick Reference view: remove the view, its nav
+  button, and its code, not just unlink it.
+
+### Build progress
+
+1. **DONE (uncommitted-to-UI, but built)** — Base body SVG, all 3 muscle
+   tiers. `js/character.js` — `QuestCharacter.renderSVG(tier, {bodyColor})`,
+   pure function, no DOM/state. Default color is clay/tan (`#D9A574`), not
+   gold, so the "Gold Plate" shop item still reads as an upgrade. Script is
+   wired into `index.html` but nothing calls it yet — no Armory screen
+   exists to render into. Tier 3 uses a V-taper torso (broad shoulders,
+   trim waist) rather than a uniformly wider box — an early draft that just
+   scaled tier 2 up read as "fat," not "fit."
+2. **Not started** — Data model (`quest-data.json` additions for shard
+   rules + shop items + rank items; `state.shards`/`ownedItems`/
+   `equippedItems` in storage.js).
+3. **Not started** — Armory screen UI (shop + equip flow) and retiring the
+   Moves/Exercise Index view.
