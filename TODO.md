@@ -248,3 +248,11 @@ missed day.
      "a trapezoid"). Live-app check: seeded owned/equipped state, loaded
      the real Armory shop grid, confirmed all 10 tiles render an actual
      `<svg>` (not the old emoji span) with the correct per-item shape.
+5. **DONE — Dropped the "Holding: X" text line.** Now that held items
+   (telescope/sword/battle_axe/hammer) are drawn directly on the
+   character, the text label under the character preview was redundant
+   — removed the `<p id="characterHeldItem">` element from `index.html`,
+   the code in `js/app.js` that filled it in, and the now-unused
+   `.character-held-item` rule from `css/style.css`. Verified live: at
+   Trailblazer rank the character correctly shows the telescope drawn in
+   its hand, with no leftover text element in the DOM at all.

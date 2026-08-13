@@ -326,10 +326,6 @@ p { margin: 0 0 8px; }
 .character-preview-card { text-align: center; }
 .character-canvas { width: 160px; height: 210px; margin: 0 auto; }
 .character-canvas svg { display: block; width: 100%; height: 100%; }
-.character-held-item {
-  margin: 6px 0 0; font-family: var(--font-display); font-weight: 700;
-  font-size: 13px; color: var(--ink-soft);
-}
 .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
 .shop-tile {
   display: flex; flex-direction: column; align-items: center; gap: 4px;

@@ -588,14 +588,6 @@
       accessory: state.equippedItems.accessory,
       heldItem: derived.heldItem ? derived.heldItem.key : null,
     });
-
-    const heldEl = $('characterHeldItem');
-    if (derived.heldItem) {
-      heldEl.textContent = `Holding: ${derived.heldItem.name}`;
-      heldEl.hidden = false;
-    } else {
-      heldEl.hidden = true;
-    }
   }
 
   function renderShopGrid(slot) {
