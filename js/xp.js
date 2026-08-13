@@ -166,6 +166,38 @@
 
     const streaks = computeStreaks(weeklyBonusWeekKeys);
 
+    // Shards — same event-sourced philosophy as XP: total ever earned is
+    // always recomputed from the same session/badge/Side Quest history,
+    // never tracked as an incremental counter. Spendable balance is just
+    // earned minus the cost of everything currently owned, so buying an
+    // item can never desync from the ledger it's paid out of.
+    const shardRules = questData.shard_rules || {};
+    const shardsPerSession = shardRules.shards_per_completed_session || 0;
+    const shardsWeeklyBonus = shardRules.shards_weekly_full_attendance_bonus || 0;
+    const shardsBadgeBonus = shardRules.shards_badge_bonus || 0;
+    const shardsSideQuestBonus = shardRules.shards_side_quest_bonus || 0;
+
+    let shardsFromSessions = 0;
+    sessions.forEach((s) => {
+      shardsFromSessions += shardsPerSession + (weeklyBonusSessionIds.has(s.id) ? shardsWeeklyBonus : 0);
+    });
+    const shardsFromBadges = earnedBadges.length * shardsBadgeBonus;
+    const shardsFromSideQuests = earnedSideQuests.length * shardsSideQuestBonus;
+    const shardsEarned = shardsFromSessions + shardsFromBadges + shardsFromSideQuests;
+
+    const shopItems = questData.shop_items || [];
+    const ownedItems = state.ownedItems || [];
+    const shardsSpent = ownedItems.reduce((sum, key) => {
+      const item = shopItems.find((it) => it.key === key);
+      return sum + (item ? item.cost : 0);
+    }, 0);
+    const shardsBalance = shardsEarned - shardsSpent;
+
+    // Held item is derived purely from current rank — never stored, never
+    // purchasable, always exactly what the current rank grants.
+    const rankDef = questData.ranks.find((r) => r.name === currentRank.name);
+    const heldItem = (rankDef && rankDef.free_item) || null;
+
     return {
       loggedToday,
       currentStreak: streaks.current,
@@ -177,6 +209,10 @@
       earnedBadges,
       sideQuestXP,
       earnedSideQuests,
+      shardsEarned,
+      shardsSpent,
+      shardsBalance,
+      heldItem,
       currentRank,
       nextRank,
       progressFraction: Math.max(0, Math.min(1, progressFraction)),

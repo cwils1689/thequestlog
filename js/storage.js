@@ -11,6 +11,8 @@
       sessions: [],   // { id, programIndex, dateISO, loggedAt }
       badges: {},     // { [badgeKey]: { earned: bool, date: 'YYYY-MM-DD' } }
       sideQuests: {}, // { [sideQuestKey]: { earned: bool, date: 'YYYY-MM-DD' } }
+      ownedItems: [], // shop_item keys purchased with Shards — never removed once bought
+      equippedItems: { head: null, body_color: null, accessory: null }, // shop_item key per slot, or null
       settings: {
         badgePinHash: null, // hex SHA-256(salt + ':' + pin), or null = no parent gate yet
         badgePinSalt: null, // hex random salt
@@ -30,6 +32,8 @@
       if (!Array.isArray(state.sessions)) state.sessions = [];
       if (!state.badges || typeof state.badges !== 'object') state.badges = {};
       if (!state.sideQuests || typeof state.sideQuests !== 'object') state.sideQuests = {};
+      if (!Array.isArray(state.ownedItems)) state.ownedItems = [];
+      if (!state.equippedItems || typeof state.equippedItems !== 'object') state.equippedItems = defaultState().equippedItems;
       if (!state.settings || typeof state.settings !== 'object') state.settings = defaultState().settings;
       return state;
     } catch (e) {
@@ -60,6 +64,8 @@
     const state = Object.assign(defaultState(), parsed);
     if (!state.badges || typeof state.badges !== 'object') state.badges = {};
     if (!state.sideQuests || typeof state.sideQuests !== 'object') state.sideQuests = {};
+    if (!Array.isArray(state.ownedItems)) state.ownedItems = [];
+    if (!state.equippedItems || typeof state.equippedItems !== 'object') state.equippedItems = defaultState().equippedItems;
     if (!state.settings || typeof state.settings !== 'object') state.settings = defaultState().settings;
     return state;
   }

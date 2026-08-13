@@ -119,8 +119,31 @@ missed day.
    exists to render into. Tier 3 uses a V-taper torso (broad shoulders,
    trim waist) rather than a uniformly wider box — an early draft that just
    scaled tier 2 up read as "fat," not "fit."
-2. **Not started** — Data model (`quest-data.json` additions for shard
-   rules + shop items + rank items; `state.shards`/`ownedItems`/
-   `equippedItems` in storage.js).
-3. **Not started** — Armory screen UI (shop + equip flow) and retiring the
-   Moves/Exercise Index view.
+2. **DONE** — Data model.
+   - `quest-data.json`: `shard_rules` (5/15/35/45 per event, 705 ceiling),
+     `shop_items` (15 items, 580 total — exact roster/costs from the
+     brainstorm), `free_item` added to the 4 promoted ranks.
+   - `storage.js`: `ownedItems` (array of purchased shop_item keys) and
+     `equippedItems` ({head, body_color, accessory} -> key or null) added
+     to `defaultState()`, with the same load()/importState() migration
+     guards as every other field — an old backup missing these fields
+     loads clean, verified directly.
+   - `xp.js`: `computeDerived()` now also returns `shardsEarned`,
+     `shardsSpent`, `shardsBalance`, and `heldItem`. Shards follow the same
+     event-sourced philosophy as XP — total earned is always recomputed
+     from session/badge/Side Quest history, never an incremental counter,
+     so `shardsBalance = shardsEarned - shardsSpent` can never desync from
+     the ledger it's paid out of. `heldItem` is derived purely from
+     `currentRank` (looked up in `ranks[].free_item`) — no state at all,
+     since it's never purchasable or lost.
+   - Verified with direct unit tests (Node, real quest-data.json): a
+     3-week/1-badge/1-Side-Quest/2-owned-items scenario produced exactly
+     the expected 170 earned / 20 spent / 150 balance and the correct
+     Trailblazer+Telescope; a Recruit-only scenario correctly showed
+     `heldItem: null`; a max-everything scenario reached Master of the
+     Forge + Hammer with all 15 items ownable (580 spent) and balance
+     still positive. Live smoke test: fresh load, full nav sweep, and a
+     session log all still work with zero console errors.
+3. **Not started** — Armory screen UI (shop + equip flow, character render
+   with equipped items layered on) and retiring the Moves/Exercise Index
+   view.

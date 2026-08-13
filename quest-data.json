@@ -45,6 +45,32 @@
     "side_quest_bonus_xp": 25,
     "note": "At consistent 3x/week attendance plus badges earned along the way, Master of the Forge lands around the end of Week 12."
   },
+  "shard_rules": {
+    "shards_per_completed_session": 5,
+    "shards_weekly_full_attendance_bonus": 15,
+    "shards_badge_bonus": 35,
+    "shards_side_quest_bonus": 45,
+    "note": "Ceiling at perfect attendance + all badges + all Side Quests is 705 Shards across the 12 weeks — the full shop (580 Shards) is reachable without needing perfect attendance."
+  },
+  "shop_items": [
+    { "key": "scout_cap", "slot": "head", "name": "Scout Cap", "cost": 10 },
+    { "key": "explorers_goggles", "slot": "head", "name": "Explorer's Goggles", "cost": 20 },
+    { "key": "winged_helm", "slot": "head", "name": "Winged Helm", "cost": 40 },
+    { "key": "star_watcher_hood", "slot": "head", "name": "Star-Watcher Hood", "cost": 60 },
+    { "key": "forgemasters_crown", "slot": "head", "name": "Forgemaster's Crown", "cost": 100 },
+
+    { "key": "sky_blue", "slot": "body_color", "name": "Sky Blue", "cost": 10, "color": "#3D6FD6" },
+    { "key": "ember_orange", "slot": "body_color", "name": "Ember Orange", "cost": 10, "color": "#E0562F" },
+    { "key": "moss_green", "slot": "body_color", "name": "Moss Green", "cost": 10, "color": "#2EA36B" },
+    { "key": "shadow_purple", "slot": "body_color", "name": "Shadow Purple", "cost": 15, "color": "#8E3FB8" },
+    { "key": "gold_plate", "slot": "body_color", "name": "Gold Plate", "cost": 50, "color": "#E0A400" },
+
+    { "key": "travelers_cloak", "slot": "accessory", "name": "Traveler's Cloak", "cost": 15 },
+    { "key": "striped_scarf", "slot": "accessory", "name": "Striped Scarf", "cost": 15 },
+    { "key": "battle_cape", "slot": "accessory", "name": "Battle Cape", "cost": 35 },
+    { "key": "star_trail_cape", "slot": "accessory", "name": "Star-Trail Cape", "cost": 70 },
+    { "key": "champions_mantle", "slot": "accessory", "name": "Champion's Mantle", "cost": 120 }
+  ],
   "side_quests": [
     {
       "key": "the_gauntlet",
@@ -86,19 +112,23 @@
     },
     {
       "name": "Trailblazer",
-      "xp_required": 100
+      "xp_required": 100,
+      "free_item": { "key": "telescope", "name": "Telescope" }
     },
     {
       "name": "Adventurer",
-      "xp_required": 250
+      "xp_required": 250,
+      "free_item": { "key": "sword", "name": "Sword" }
     },
     {
       "name": "Vanguard",
-      "xp_required": 450
+      "xp_required": 450,
+      "free_item": { "key": "battle_axe", "name": "Battle Axe" }
     },
     {
       "name": "Master of the Forge",
-      "xp_required": 700
+      "xp_required": 700,
+      "free_item": { "key": "hammer", "name": "Hammer" }
     }
   ],
   "badges": [
