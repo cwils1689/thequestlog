@@ -64,7 +64,7 @@
     renderToday();
     renderRank();
     renderBadges();
-    renderExerciseIndex();
+    renderArmory();
     renderBoard();
     renderHistory();
     renderSettings();
@@ -557,70 +557,89 @@
     return link;
   }
 
-  function exerciseIndexRow(it) {
-    const name = it.exercise || it.name;
-    const dose = it.reps || it.dose || '';
-    const li = document.createElement('li');
-    li.className = 'index-row';
-    const left = document.createElement('span');
-    left.className = 'exercise-text';
-    if (it.slot) {
-      const slotEl = document.createElement('span');
-      slotEl.className = 'exercise-slot';
-      slotEl.textContent = it.slot;
-      left.appendChild(slotEl);
+  /* ---------------------------------------------------------------------
+     Armory — character preview + Shards shop
+     --------------------------------------------------------------------- */
+  const SLOT_ELEMENT_ID = { head: 'shopGridHead', body_color: 'shopGridBodyColor', accessory: 'shopGridAccessory' };
+  const SLOT_ICON = { head: '🪖', accessory: '🧣' };
+
+  function renderArmory() {
+    $('armoryShardsVal').textContent = derived.shardsBalance;
+    renderCharacterPreview();
+    Object.keys(SLOT_ELEMENT_ID).forEach((slot) => renderShopGrid(slot));
+  }
+
+  function currentMuscleTier() {
+    // Tied to how far the program has actually been reached (not whichever
+    // day is currently selected on Today, which he can freely browse) —
+    // ticks up the moment the next session crosses into a new phase.
+    const slot = QuestXP.slotForIndex(derived.nextProgramIndex);
+    const phase = QuestXP.phaseForWeek(questData, slot.week);
+    return phase ? phase.id : 1;
+  }
+
+  function renderCharacterPreview() {
+    const tier = currentMuscleTier();
+    const colorKey = state.equippedItems.body_color;
+    const colorItem = colorKey ? questData.shop_items.find((i) => i.key === colorKey) : null;
+    $('characterCanvas').innerHTML = QuestCharacter.renderSVG(tier, colorItem ? { bodyColor: colorItem.color } : undefined);
+
+    const heldEl = $('characterHeldItem');
+    if (derived.heldItem) {
+      heldEl.textContent = `Holding: ${derived.heldItem.name}`;
+      heldEl.hidden = false;
+    } else {
+      heldEl.hidden = true;
     }
-    const nameEl = document.createElement('span');
-    nameEl.className = 'exercise-name';
-    nameEl.textContent = displayName(name);
-    left.appendChild(nameEl);
-    const reps = document.createElement('span');
-    reps.className = 'exercise-reps';
-    reps.textContent = dose;
-    li.appendChild(left);
-    li.appendChild(reps);
-    li.appendChild(watchButton(name, false));
-    return li;
   }
 
-  function indexSection(title, items) {
-    const details = document.createElement('details');
-    details.className = 'card collapsible index-section';
-    const summary = document.createElement('summary');
-    summary.textContent = title;
-    const ul = document.createElement('ul');
-    ul.className = 'exercise-list index-list';
-    items.forEach((it) => ul.appendChild(exerciseIndexRow(it)));
-    details.appendChild(summary);
-    details.appendChild(ul);
-    return details;
-  }
-
-  function renderExerciseIndex() {
-    const root = $('exerciseIndexList');
-    if (!root) return;
-    root.innerHTML = '';
-    root.appendChild(indexSection('🔥 Warm-up', questData.warmup));
-    root.appendChild(indexSection('🧊 Cooldown', questData.cooldown));
-    questData.phases.forEach((phase) => {
-      const details = document.createElement('details');
-      details.className = 'card collapsible index-section';
-      const summary = document.createElement('summary');
-      summary.textContent = `Phase ${phase.id} · ${phase.name} (Weeks ${phase.weeks})`;
-      details.appendChild(summary);
-      QuestXP.DAY_LETTERS.forEach((day) => {
-        const meta = questData.days_meta[day];
-        const heading = document.createElement('h4');
-        heading.className = 'index-subheading';
-        heading.textContent = `${meta.label} · ${meta.focus}`;
-        const ul = document.createElement('ul');
-        ul.className = 'exercise-list index-list';
-        (phase.days[day] || []).forEach((it) => ul.appendChild(exerciseIndexRow(it)));
-        details.appendChild(heading);
-        details.appendChild(ul);
-      });
-      root.appendChild(details);
+  function renderShopGrid(slot) {
+    const container = $(SLOT_ELEMENT_ID[slot]);
+    container.innerHTML = '';
+    questData.shop_items.filter((it) => it.slot === slot).forEach((item) => {
+      const owned = state.ownedItems.includes(item.key);
+      const equipped = state.equippedItems[slot] === item.key;
+      const tile = document.createElement('button');
+      tile.className = 'shop-tile' + (equipped ? ' equipped' : owned ? ' owned' : ' locked');
+      const swatch = item.color
+        ? `<span class="shop-tile-swatch" style="background:${item.color}"></span>`
+        : `<span class="shop-tile-icon">${SLOT_ICON[slot] || '🛡️'}</span>`;
+      const status = equipped ? 'Equipped ✓' : owned ? 'Tap to equip' : `${item.cost} Shards`;
+      tile.innerHTML = `${swatch}<span class="shop-tile-name">${item.name}</span><span class="shop-tile-status">${status}</span>`;
+      tile.addEventListener('click', () => handleShopTileClick(item, slot, owned, equipped));
+      container.appendChild(tile);
     });
+  }
+
+  function handleShopTileClick(item, slot, owned, equipped) {
+    if (equipped) {
+      state.equippedItems[slot] = null;
+      persist();
+      recompute();
+      renderAll();
+      showToast(`${item.name} unequipped.`);
+      return;
+    }
+    if (owned) {
+      state.equippedItems[slot] = item.key;
+      persist();
+      recompute();
+      renderAll();
+      showToast(`${item.name} equipped!`);
+      return;
+    }
+    if (derived.shardsBalance >= item.cost) {
+      state.ownedItems.push(item.key);
+      state.equippedItems[slot] = item.key; // auto-equip on purchase — instant payoff
+      persist();
+      recompute();
+      renderAll();
+      showToast(`Bought ${item.name}! ✨`);
+      QuestConfetti.burst({ count: 60 });
+    } else {
+      const short = item.cost - derived.shardsBalance;
+      showToast(`Need ${short} more Shards for ${item.name}.`);
+    }
   }
 
   /* ---------------------------------------------------------------------

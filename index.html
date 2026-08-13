@@ -139,11 +139,28 @@
     </section>
 
     <!-- EXERCISE INDEX -->
-    <section class="view" id="view-exercises" data-view="exercises">
+    <section class="view" id="view-armory" data-view="armory">
       <div class="view-inner">
-        <h2 class="view-title">📚 Exercise Index</h2>
-        <p class="view-subtitle">Tap ▶ Watch to see a video demo of any move.</p>
-        <div id="exerciseIndexList"></div>
+        <h2 class="view-title">🛡️ Armory</h2>
+        <p class="view-subtitle">💎 <span id="armoryShardsVal">0</span> Shards</p>
+
+        <div class="card character-preview-card">
+          <div class="character-canvas" id="characterCanvas"></div>
+          <p class="character-held-item" id="characterHeldItem" hidden></p>
+        </div>
+
+        <div class="card">
+          <h3 class="section-title">🪖 Head</h3>
+          <div class="shop-grid" id="shopGridHead"></div>
+        </div>
+        <div class="card">
+          <h3 class="section-title">🎨 Body Color</h3>
+          <div class="shop-grid" id="shopGridBodyColor"></div>
+        </div>
+        <div class="card">
+          <h3 class="section-title">🧣 Accessory</h3>
+          <div class="shop-grid" id="shopGridAccessory"></div>
+        </div>
       </div>
     </section>
 
@@ -232,7 +249,7 @@
     <button class="nav-btn" data-nav="rank"><span class="nav-icon">🚀</span><span>Rank</span></button>
     <button class="nav-btn" data-nav="badges"><span class="nav-icon">🎖️</span><span>Badges</span></button>
     <button class="nav-btn" data-nav="board"><span class="nav-icon">🗺️</span><span>Map</span></button>
-    <button class="nav-btn" data-nav="exercises"><span class="nav-icon">🤸</span><span>Moves</span></button>
+    <button class="nav-btn" data-nav="armory"><span class="nav-icon">🛡️</span><span>Armory</span></button>
     <button class="nav-btn" data-nav="history"><span class="nav-icon">📜</span><span>History</span></button>
     <button class="nav-btn" data-nav="settings"><span class="nav-icon">⚙️</span><span>Settings</span></button>
   </nav>

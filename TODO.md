@@ -144,6 +144,30 @@ missed day.
      Forge + Hammer with all 15 items ownable (580 spent) and balance
      still positive. Live smoke test: fresh load, full nav sweep, and a
      session log all still work with zero console errors.
-3. **Not started** — Armory screen UI (shop + equip flow, character render
-   with equipped items layered on) and retiring the Moves/Exercise Index
-   view.
+3. **DONE (core flow) — Armory screen UI.**
+   - Moves/Exercise Index fully retired — view, nav button, and its
+     rendering functions removed. `youtubeSearchUrl`/`openExerciseVideo`/
+     `watchButton` kept (Today's per-exercise play buttons still use them).
+   - New Armory tab (🛡️): character preview (muscle tier + equipped body
+     color, live SVG render via `character.js`), Shards balance, and 3 shop
+     grids (Head/Body Color/Accessory) built straight from
+     `quest-data.json`'s `shop_items`.
+   - Tap an unowned+affordable item -> buys it (adds to `ownedItems`) and
+     auto-equips it. Unowned+unaffordable -> toast with the exact Shard
+     shortfall, not just disabled. Owned+unequipped -> equips. Equipped ->
+     unequips. No PIN, no confirm modal on spending, per the locked design.
+   - **Scope boundary, deliberately not done tonight**: head/accessory
+     items and the held item are fully trackable/equippable but have no
+     actual artwork yet — they show as a name + generic icon in the shop,
+     not visually drawn onto the character. Body color *is* fully visual
+     (already worked, since `character.js` already took a `bodyColor` param)
+     — confirmed the character's actual fill color changes live on
+     purchase/equip. Drawing real hat/cape/weapon art onto the character is
+     follow-up work, not scoped into "the Armory screen UI."
+   - Verified live: fresh Armory renders correctly (0 Shards, 5 tiles per
+     slot, correct costs); buying an unaffordable item shows the exact
+     shortfall and does not charge anything; buying an affordable item
+     charges correctly, auto-equips, and the character SVG's fill visibly
+     changes color; the full equip -> unequip -> re-equip toggle cycle
+     works; everything persists across reload; Today's video play buttons
+     still work unaffected; zero console errors throughout.
