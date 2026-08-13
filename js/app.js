@@ -298,6 +298,15 @@
     $('rankHeroName').textContent = derived.currentRank.name;
     $('rankHeroXp').textContent = derived.totalXP;
 
+    const sourceTotal = derived.sessionXP + derived.badgeXP + derived.sideQuestXP;
+    const pctOf = (n) => (sourceTotal > 0 ? (n / sourceTotal) * 100 : 0);
+    $('xpSegSessions').style.width = pctOf(derived.sessionXP) + '%';
+    $('xpSegBadges').style.width = pctOf(derived.badgeXP) + '%';
+    $('xpSegSideQuests').style.width = pctOf(derived.sideQuestXP) + '%';
+    $('xpSourceSessionsVal').textContent = `${derived.sessionXP} XP`;
+    $('xpSourceBadgesVal').textContent = `${derived.badgeXP} XP`;
+    $('xpSourceSideQuestsVal').textContent = `${derived.sideQuestXP} XP`;
+
     const pct = Math.round(derived.progressFraction * 100);
     $('meterFill').style.width = pct + '%';
     $('meterTrack').setAttribute('aria-valuenow', String(pct));

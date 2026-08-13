@@ -306,6 +306,29 @@ p { margin: 0 0 8px; }
 .rank-ladder-xp { font-size: 13px; color: var(--ink-soft); }
 .rank-ladder li.current .rank-ladder-xp { color: var(--ink); }
 
+.xp-source-bar {
+  display: flex;
+  height: 22px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--line-grey);
+  background: var(--paper-dim);
+  margin-bottom: 14px;
+}
+.xp-source-seg { height: 100%; width: 0%; transition: width 0.6s cubic-bezier(.22,1,.36,1); }
+.xp-source-sessions { background: var(--phase-1); }
+.xp-source-badges { background: var(--gold-deep); }
+.xp-source-sidequests { background: var(--phase-2); }
+
+.xp-source-legend { display: flex; flex-direction: column; gap: 10px; }
+.xp-source-legend li { display: flex; align-items: center; gap: 8px; }
+.xp-source-label { font-family: var(--font-display); font-weight: 600; font-size: 14px; }
+.xp-source-value { margin-left: auto; font-family: var(--font-display); font-weight: 700; color: var(--gold-deep); }
+.xp-swatch { width: 12px; height: 12px; border-radius: 50%; flex: 0 0 auto; }
+.xp-swatch-sessions { background: var(--phase-1); }
+.xp-swatch-badges { background: var(--gold-deep); }
+.xp-swatch-sidequests { background: var(--phase-2); }
+
 /* ---------------- Badges ---------------- */
 .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
 .badge-tile {
