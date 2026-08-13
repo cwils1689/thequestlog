@@ -91,6 +91,7 @@
   function renderHeader() {
     $('headerRankName').textContent = derived.currentRank.name;
     $('headerXpTotal').textContent = derived.totalXP + ' XP';
+    $('headerShardsTotal').textContent = '💎 ' + derived.shardsBalance;
   }
 
   /* ---------------------------------------------------------------------
@@ -629,17 +630,27 @@
       return;
     }
     if (derived.shardsBalance >= item.cost) {
-      state.ownedItems.push(item.key);
-      state.equippedItems[slot] = item.key; // auto-equip on purchase — instant payoff
-      persist();
-      recompute();
-      renderAll();
-      showToast(`Bought ${item.name}! ✨`);
-      QuestConfetti.burst({ count: 60 });
+      openConfirm(
+        `Buy ${item.name}?`,
+        `This spends ${item.cost} Shards. You have ${derived.shardsBalance}.`,
+        () => purchaseItem(item, slot),
+        { okClass: 'btn-primary', okLabel: 'Buy it!' }
+      );
     } else {
       const short = item.cost - derived.shardsBalance;
       showToast(`Need ${short} more Shards for ${item.name}.`);
     }
+  }
+
+  function purchaseItem(item, slot) {
+    state.ownedItems.push(item.key);
+    state.equippedItems[slot] = item.key; // auto-equip on purchase — instant payoff
+    persist();
+    recompute();
+    closeModal();
+    renderAll();
+    showToast(`Bought ${item.name}! ✨`);
+    QuestConfetti.burst({ count: 60 });
   }
 
   /* ---------------------------------------------------------------------
@@ -1048,10 +1059,14 @@
     confirmCallback = null;
   }
 
-  function openConfirm(title, body, onConfirm) {
+  function openConfirm(title, body, onConfirm, options) {
+    const opts = options || {};
     $('modalConfirmTitle').textContent = title;
     $('modalConfirmBody').textContent = body;
     confirmCallback = onConfirm;
+    const okBtn = $('modalConfirmOk');
+    okBtn.className = 'btn ' + (opts.okClass || 'btn-danger');
+    okBtn.textContent = opts.okLabel || 'Confirm';
     openModal('modalConfirm');
   }
 

@@ -91,7 +91,9 @@ p { margin: 0 0 8px; }
 .brand-title { font-size: 18px; letter-spacing: 0.2px; }
 .header-hud { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.25; }
 .hud-rank { font-size: 12px; color: var(--gold); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.hud-xp-row { display: flex; align-items: baseline; gap: 8px; }
 .hud-xp { font-size: 16px; font-weight: 700; }
+.hud-shards { font-size: 13px; font-weight: 700; color: var(--gold); }
 
 /* ---------------- Layout ---------------- */
 #main {
