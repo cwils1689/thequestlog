@@ -47,6 +47,45 @@
   }
 
   /**
+   * Current and best "full attendance" streaks, in consecutive calendar
+   * weeks — a week counts if it earned the weekly bonus (all 3 sessions).
+   * Always returns both: "current" alone would read as a failure state the
+   * moment a week is missed, which this app deliberately never does — best
+   * stays as a permanent high-water mark next to whatever current is.
+   */
+  function computeStreaks(weeklyBonusWeekKeys) {
+    if (weeklyBonusWeekKeys.size === 0) return { current: 0, best: 0 };
+
+    const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+    const sortedKeys = Array.from(weeklyBonusWeekKeys).sort();
+
+    let best = 0;
+    let run = 0;
+    let prevTime = null;
+    sortedKeys.forEach((key) => {
+      const t = new Date(key).getTime();
+      run = prevTime !== null && t - prevTime === WEEK_MS ? run + 1 : 1;
+      best = Math.max(best, run);
+      prevTime = t;
+    });
+
+    // Walk backward from this calendar week. If this week hasn't earned the
+    // bonus yet (the common case — it's still in progress), start from last
+    // week instead, so an in-progress week never looks like a broken streak.
+    const thisWeekKey = calendarWeekKey(new Date().toISOString());
+    let cursor = new Date(thisWeekKey);
+    if (!weeklyBonusWeekKeys.has(thisWeekKey)) cursor = new Date(cursor.getTime() - WEEK_MS);
+
+    let current = 0;
+    while (weeklyBonusWeekKeys.has(cursor.toISOString().slice(0, 10))) {
+      current += 1;
+      cursor = new Date(cursor.getTime() - WEEK_MS);
+    }
+
+    return { current, best };
+  }
+
+  /**
    * Recompute all derived XP/rank state from scratch every time — this keeps
    * edits/deletes in History always consistent instead of tracking bonus
    * state incrementally.
@@ -125,8 +164,12 @@
     const todayKey = calendarDayKey(new Date().toISOString());
     const loggedToday = sessions.some((s) => calendarDayKey(s.dateISO) === todayKey);
 
+    const streaks = computeStreaks(weeklyBonusWeekKeys);
+
     return {
       loggedToday,
+      currentStreak: streaks.current,
+      bestStreak: streaks.best,
       sessionsWithXP,
       totalXP,
       sessionXP,

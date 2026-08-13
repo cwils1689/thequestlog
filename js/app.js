@@ -17,6 +17,7 @@
   // early phases put it in parens ("Foo (bar)"), later phases after a
   // comma ("Foo, bar") — either way, keep only what's before the first one.
   const displayName = (name) => name.split('(')[0].split(',')[0].trim();
+  const pluralWeeks = (n) => `${n} week${n === 1 ? '' : 's'}`;
 
   /* ---------------------------------------------------------------------
      Boot
@@ -757,6 +758,8 @@
      --------------------------------------------------------------------- */
   function renderBoard() {
     $('boardCompletedCount').textContent = derived.completedCount;
+    $('streakCurrentVal').textContent = pluralWeeks(derived.currentStreak);
+    $('streakBestVal').textContent = pluralWeeks(derived.bestStreak);
     const trail = $('questTrail');
     trail.innerHTML = '';
     const sideQuestDefs = questData.side_quests || [];

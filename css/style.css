@@ -342,6 +342,17 @@ p { margin: 0 0 8px; }
 .badge-status { font-size: 11px; color: var(--gold-deep); font-weight: 700; margin-top: 2px; }
 
 /* ---------------- Quest board ---------------- */
+.streak-stats { display: flex; gap: 10px; flex-wrap: wrap; }
+.streak-chip {
+  flex: 1; min-width: 140px; display: flex; align-items: center; gap: 10px;
+  background: #fff; border: 1px solid var(--line-grey); border-radius: var(--radius-sm);
+  padding: 10px 12px; box-shadow: var(--shadow-card);
+}
+.streak-chip-icon { font-size: 22px; flex: 0 0 auto; }
+.streak-chip-text { display: flex; flex-direction: column; }
+.streak-chip-label { font-size: 12px; color: var(--ink-soft); font-weight: 600; }
+.streak-chip-value { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+
 .quest-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--ink-soft); }
 .legend-item { display: flex; align-items: center; gap: 4px; }
 .legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
