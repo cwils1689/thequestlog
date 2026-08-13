@@ -344,6 +344,7 @@
   function wireBadges() {
     $('modalBadgeClose').addEventListener('click', closeModal);
     $('modalBadgeEarn').addEventListener('click', attemptEarnBadge);
+    $('modalBadgeUnearn').addEventListener('click', attemptUnearnBadge);
   }
 
   let activeSideQuestKey = null;
@@ -351,6 +352,7 @@
   function wireSideQuests() {
     $('sqCloseBtn').addEventListener('click', closeModal);
     $('sqEarnBtn').addEventListener('click', attemptEarnSideQuest);
+    $('sqUnearnBtn').addEventListener('click', attemptUnearnSideQuest);
   }
 
   function openSideQuestModal(key) {
@@ -380,9 +382,11 @@
     if (earned) {
       $('sqStatus').textContent = `Earned ${state.sideQuests[key].date}`;
       $('sqEarnBtn').hidden = true;
+      $('sqUnearnBtn').hidden = false;
     } else {
       $('sqStatus').textContent = `Worth +${sq.xp_reward} XP`;
       $('sqEarnBtn').hidden = false;
+      $('sqUnearnBtn').hidden = true;
     }
     openModal('modalSideQuest');
   }
@@ -417,6 +421,21 @@
     }
   }
 
+  function attemptUnearnSideQuest() {
+    if (!activeSideQuestKey) return;
+    openPinVerify('Enter the parent PIN to undo this Side Quest.', unearnActiveSideQuest);
+  }
+
+  function unearnActiveSideQuest() {
+    if (!activeSideQuestKey) return;
+    delete state.sideQuests[activeSideQuestKey];
+    persist();
+    recompute();
+    closeModal();
+    showToast('Side Quest un-marked.');
+    renderAll();
+  }
+
   function renderBadges() {
     const grid = $('badgeGrid');
     grid.innerHTML = '';
@@ -445,9 +464,11 @@
     if (earned) {
       $('modalBadgeStatus').textContent = `Earned ${state.badges[key].date}`;
       $('modalBadgeEarn').hidden = true;
+      $('modalBadgeUnearn').hidden = false;
     } else {
       $('modalBadgeStatus').textContent = `Worth +${questData.xp_rules.badge_bonus_xp} XP`;
       $('modalBadgeEarn').hidden = false;
+      $('modalBadgeUnearn').hidden = true;
     }
     openModal('modalBadge');
   }
@@ -478,6 +499,21 @@
     if (derived.currentRank.name !== prevRank) {
       setTimeout(() => showRankUp(derived.currentRank.name), 700);
     }
+  }
+
+  function attemptUnearnBadge() {
+    if (!activeBadgeKey) return;
+    openPinVerify('Enter the parent PIN to undo this badge.', unearnActiveBadge);
+  }
+
+  function unearnActiveBadge() {
+    if (!activeBadgeKey) return;
+    delete state.badges[activeBadgeKey];
+    persist();
+    recompute();
+    closeModal();
+    showToast('Badge un-marked.');
+    renderAll();
   }
 
   /* ---------------------------------------------------------------------
@@ -612,6 +648,15 @@
       closeModal();
     });
     $('pinSubmitBtn').addEventListener('click', submitPinModal);
+    $('pinForgotBtn').addEventListener('click', () => {
+      pinResolveCallback = null;
+      closeModal();
+      openConfirm(
+        'Forgot your PIN?',
+        'There\'s no way to recover a forgotten PIN — the only fix is a full reset, which wipes every session, badge, and Side Quest on this device (and clears the PIN too). There\'s no partial recovery. Export a backup first if you have one you want to keep.',
+        doFullResetIncludingPin
+      );
+    });
   }
 
   function openPinCreate(subtitle, onSuccess) {
@@ -620,6 +665,7 @@
     $('pinTitle').textContent = 'Set Parent PIN';
     $('pinSubtitle').textContent = subtitle || 'Choose a PIN only a parent knows — you\'ll enter it to approve badges.';
     $('pinConfirmRow').hidden = false;
+    $('pinForgotBtn').hidden = true;
     $('pinInput').value = '';
     $('pinConfirmInput').value = '';
     $('pinError').textContent = '';
@@ -632,6 +678,7 @@
     $('pinTitle').textContent = 'Enter Parent PIN';
     $('pinSubtitle').textContent = subtitle || 'Enter the parent PIN to continue.';
     $('pinConfirmRow').hidden = true;
+    $('pinForgotBtn').hidden = false;
     $('pinInput').value = '';
     $('pinConfirmInput').value = '';
     $('pinError').textContent = '';
@@ -917,6 +964,19 @@
     closeModal();
     renderAll();
     showToast('Progress reset. Fresh start!');
+  }
+
+  // Distinct from doReset(): this is the "forgot PIN" recovery path, so it
+  // deliberately does NOT preserve settings — the whole point is to clear
+  // a forgotten PIN, which doReset() intentionally never does.
+  function doFullResetIncludingPin() {
+    state = QuestStorage.defaultState();
+    persist();
+    recompute();
+    selectedProgramIndex = derived.nextProgramIndex;
+    closeModal();
+    renderAll();
+    showToast('Everything reset, including the PIN.');
   }
 
   /* ---------------------------------------------------------------------

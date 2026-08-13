@@ -226,6 +226,7 @@
     <p id="modalBadgeCriteria"></p>
     <p class="modal-badge-status" id="modalBadgeStatus"></p>
     <div class="modal-actions" id="modalBadgeActions">
+      <button class="btn btn-danger" id="modalBadgeUnearn" hidden>Undo (mis-tap?)</button>
       <button class="btn btn-ghost" id="modalBadgeClose">Close</button>
       <button class="btn btn-primary" id="modalBadgeEarn">I did it! ✅</button>
     </div>
@@ -237,6 +238,7 @@
     <ul class="exercise-list" id="sqSteps"></ul>
     <p class="modal-badge-status" id="sqStatus"></p>
     <div class="modal-actions" id="sqActions">
+      <button class="btn btn-danger" id="sqUnearnBtn" hidden>Undo (mis-tap?)</button>
       <button class="btn btn-ghost" id="sqCloseBtn">Close</button>
       <button class="btn btn-primary" id="sqEarnBtn">I did it! ✅</button>
     </div>
@@ -289,6 +291,7 @@
       </label>
     </div>
     <p class="hint" id="pinError" style="color: var(--day-c); min-height: 16px;"></p>
+    <button class="link-btn" id="pinForgotBtn" hidden>Forgot your PIN?</button>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="pinCancelBtn">Cancel</button>
       <button class="btn btn-primary" id="pinSubmitBtn">Save</button>
