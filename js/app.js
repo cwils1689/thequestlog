@@ -562,7 +562,6 @@
      Armory — character preview + Shards shop
      --------------------------------------------------------------------- */
   const SLOT_ELEMENT_ID = { head: 'shopGridHead', body_color: 'shopGridBodyColor', accessory: 'shopGridAccessory' };
-  const SLOT_ICON = { head: '🪖', accessory: '🧣' };
 
   function renderArmory() {
     $('armoryShardsVal').textContent = derived.shardsBalance;
@@ -609,7 +608,7 @@
       tile.className = 'shop-tile' + (equipped ? ' equipped' : owned ? ' owned' : ' locked');
       const swatch = item.color
         ? `<span class="shop-tile-swatch" style="background:${item.color}"></span>`
-        : `<span class="shop-tile-icon">${SLOT_ICON[slot] || '🛡️'}</span>`;
+        : `<span class="shop-tile-icon">${QuestCharacter.renderItemIcon(slot, item.key)}</span>`;
       const status = equipped ? 'Equipped ✓' : owned ? 'Tap to equip' : `${item.cost} Shards`;
       tile.innerHTML = `${swatch}<span class="shop-tile-name">${item.name}</span><span class="shop-tile-status">${status}</span>`;
       tile.addEventListener('click', () => handleShopTileClick(item, slot, owned, equipped));

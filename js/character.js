@@ -225,6 +225,106 @@
     },
   };
 
+  /* -----------------------------------------------------------------
+     Shop-tile icons — standalone item art for the Armory shop cards, so
+     "buy this" shows the actual hat/cape rather than a generic emoji.
+     Deliberately separate from HEAD_ART/ACCESSORY_*_ART above: those are
+     tuned to sit correctly on the character (arm-width wings, torso-width
+     capes), which doesn't fit a small square badge. Each icon is a
+     self-contained, non-interactive shape in its own 64x64 box.
+     ----------------------------------------------------------------- */
+  const HEAD_ICON = {
+    scout_cap() {
+      return `
+  <path d="M 14 38 A 18 18 0 0 1 50 38 Z" fill="${PAL.olive}" stroke="${INK}" stroke-width="2.5"/>
+  <rect x="12" y="36" width="40" height="6" rx="3" fill="${PAL.oliveDark}" stroke="${INK}" stroke-width="2"/>
+  <circle cx="32" cy="22" r="2.3" fill="${PAL.oliveDark}"/>`;
+    },
+    explorers_goggles() {
+      return `
+  <rect x="8" y="26" width="48" height="8" rx="4" fill="${PAL.brown}" stroke="${INK}" stroke-width="1.5"/>
+  <circle cx="20" cy="30" r="8" fill="${PAL.cyan}" stroke="${PAL.steel}" stroke-width="2.5"/>
+  <circle cx="44" cy="30" r="8" fill="${PAL.cyan}" stroke="${PAL.steel}" stroke-width="2.5"/>
+  <circle cx="20" cy="30" r="2.4" fill="#FFFFFF" opacity="0.55"/>
+  <circle cx="44" cy="30" r="2.4" fill="#FFFFFF" opacity="0.55"/>`;
+    },
+    winged_helm() {
+      return `
+  <path d="M 17 38 A 15 15 0 0 1 47 38 Z" fill="${PAL.steel}" stroke="${INK}" stroke-width="2.5"/>
+  <rect x="16" y="36" width="32" height="5" rx="2" fill="${PAL.steelDark}" stroke="${INK}" stroke-width="1.5"/>
+  <polygon points="19,30 7,22 22,39" fill="${PAL.cream}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="45,30 57,22 42,39" fill="${PAL.cream}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>`;
+    },
+    star_watcher_hood() {
+      return `
+  <polygon points="19,28 24,28 18,50 13,46" fill="${PAL.navy}" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+  <polygon points="45,28 40,28 46,50 51,46" fill="${PAL.navy}" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M 16 36 A 16 16 0 0 1 48 36 Z" fill="${PAL.navy}" stroke="${INK}" stroke-width="2.5"/>
+  <polygon points="26,24 38,24 32,13" fill="${PAL.navy}" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+  <polygon points="32,9 34.2,12 32,15 29.8,12" fill="${PAL.goldLight}"/>`;
+    },
+    forgemasters_crown() {
+      return `
+  <rect x="16" y="26" width="32" height="8" rx="2" fill="${PAL.gold}" stroke="${INK}" stroke-width="2.5"/>
+  <polygon points="16,26 21,15 26,26" fill="${PAL.gold}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="26,26 32,10 38,26" fill="${PAL.goldLight}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="38,26 43,15 48,26" fill="${PAL.gold}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="32" cy="30" r="2.4" fill="#C0392B" stroke="${INK}" stroke-width="1"/>`;
+    },
+  };
+
+  const ACCESSORY_ICON = {
+    travelers_cloak() {
+      return `
+  <polygon points="24,12 40,12 50,50 14,50" fill="${PAL.brownLight}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="32" cy="12" r="3" fill="${PAL.gold}" stroke="${INK}" stroke-width="1.5"/>`;
+    },
+    striped_scarf() {
+      return `
+  <rect x="12" y="22" width="40" height="14" rx="6" fill="${PAL.cream}" stroke="${INK}" stroke-width="2"/>
+  <line x1="18" y1="36" x2="26" y2="22" stroke="${PAL.ember}" stroke-width="4" stroke-linecap="round"/>
+  <line x1="30" y1="36" x2="38" y2="22" stroke="${PAL.ember}" stroke-width="4" stroke-linecap="round"/>
+  <line x1="42" y1="36" x2="49" y2="24" stroke="${PAL.ember}" stroke-width="4" stroke-linecap="round"/>
+  <rect x="22" y="34" width="8" height="18" rx="2" fill="${PAL.cream}" stroke="${INK}" stroke-width="1.5"/>
+  <rect x="33" y="34" width="8" height="18" rx="2" fill="${PAL.ember}" stroke="${INK}" stroke-width="1.5"/>`;
+    },
+    battle_cape() {
+      return `
+  <polygon points="22,12 42,12 52,42 42,50 40,40 32,50 24,40 22,50 12,42" fill="${PAL.ember}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>`;
+    },
+    star_trail_cape() {
+      return `
+  <polygon points="22,12 42,12 52,50 12,50" fill="${PAL.navy}" stroke="${PAL.gold}" stroke-width="2.5" stroke-linejoin="round"/>
+  <polygon points="22,26 24,29 22,32 20,29" fill="#FFFFFF" opacity="0.9"/>
+  <polygon points="41,32 43,35 41,38 39,35" fill="#FFFFFF" opacity="0.9"/>
+  <polygon points="27,42 29,45 27,48 25,45" fill="#FFFFFF" opacity="0.9"/>`;
+    },
+    champions_mantle() {
+      return `
+  <polygon points="18,12 46,12 56,50 8,50" fill="${PAL.purple}" stroke="${PAL.gold}" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="18" cy="12" r="3.5" fill="${PAL.cream}" stroke="${INK}" stroke-width="1.5"/>
+  <circle cx="25" cy="12" r="3.5" fill="${PAL.cream}" stroke="${INK}" stroke-width="1.5"/>
+  <circle cx="32" cy="12" r="3.5" fill="${PAL.cream}" stroke="${INK}" stroke-width="1.5"/>
+  <circle cx="39" cy="12" r="3.5" fill="${PAL.cream}" stroke="${INK}" stroke-width="1.5"/>
+  <circle cx="46" cy="12" r="3.5" fill="${PAL.cream}" stroke="${INK}" stroke-width="1.5"/>
+  <circle cx="32" cy="28" r="5" fill="${PAL.gold}" stroke="${INK}" stroke-width="2"/>
+  <circle cx="32" cy="28" r="2" fill="#C0392B"/>`;
+    },
+  };
+
+  /**
+   * Standalone icon for a shop tile — the item alone, no character.
+   * @param {'head'|'accessory'} slot
+   * @param {string} key - shop_item key
+   * @returns {string} SVG markup, or '' if the slot/key isn't recognized
+   */
+  function renderItemIcon(slot, key) {
+    const map = slot === 'head' ? HEAD_ICON : slot === 'accessory' ? ACCESSORY_ICON : null;
+    const draw = map && key && map[key];
+    if (!draw) return '';
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="100%" height="100%" role="img" aria-label="${key}">${draw()}</svg>`;
+  }
+
   function headItemMarkup(headKey) {
     const draw = headKey && HEAD_ART[headKey];
     return draw ? draw(HEAD_CX, HEAD_CY) : '';
@@ -281,5 +381,5 @@
 </svg>`;
   }
 
-  global.QuestCharacter = { renderSVG, DEFAULT_COLOR };
+  global.QuestCharacter = { renderSVG, DEFAULT_COLOR, renderItemIcon };
 })(window);

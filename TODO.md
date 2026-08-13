@@ -224,3 +224,27 @@ missed day.
      thumbnail earlier made winged_helm's wings look broken/off-canvas;
      that was a canvas-scaling artifact in the test harness, not the SVG,
      confirmed by re-rendering that one item alone at full size).
+4. **DONE — Shop-tile item icons.** The Armory shop cards showed a
+   generic 🪖/🧣 emoji for every head/accessory item (only body_color had
+   a real preview, via its color swatch) — he could see what an item
+   *did to the character* but not what it looked like before buying it.
+   `js/character.js`:
+   - New `HEAD_ICON`/`ACCESSORY_ICON` maps (5 each) + `renderItemIcon(slot,
+     key)`, exported on `QuestCharacter`. Deliberately separate shapes
+     from `HEAD_ART`/`ACCESSORY_*_ART` rather than reused at a different
+     scale — those are tuned to sit correctly on the character (e.g.
+     winged_helm's wings are arm-width, capes are torso-width), which
+     doesn't fit a small square badge; a first attempt reusing them for
+     winged_helm clipped the wings off the icon. Each icon is a
+     self-contained shape in its own 64x64 box, no character/body.
+   - `js/app.js`'s `renderShopGrid()` now calls `QuestCharacter
+     .renderItemIcon(slot, item.key)` for the `shop-tile-icon` span
+     instead of the old flat `SLOT_ICON` emoji lookup (which is now
+     removed — no more per-slot-only icon, every item has its own).
+   - Verified: all 10 icons rendered standalone and at the actual 36px
+     shop-tile display size (not just the zoomed-in preview) — every item
+     stays legible and distinguishable from its category-mates at real
+     size (e.g. the 3 capes read as browns/orange/navy/purple, not just
+     "a trapezoid"). Live-app check: seeded owned/equipped state, loaded
+     the real Armory shop grid, confirmed all 10 tiles render an actual
+     `<svg>` (not the old emoji span) with the correct per-item shape.
