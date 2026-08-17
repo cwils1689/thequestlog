@@ -72,15 +72,18 @@ p { margin: 0 0 8px; }
   background-color: var(--ink);
   border-bottom: 3px solid var(--gold);
   color: var(--paper);
-  position: sticky;
-  top: 0;
+  /* `position: sticky` on real iOS Safari has a still-current bug where
+     the element's own background sits blank/transparent until it actually
+     becomes "stuck" by scrolling — a GPU layer-promotion hint didn't fix
+     it either. Since this header sits at the very top of the page with
+     top:0, "sticky" and "fixed" are behaviorally identical here (there's
+     no scroll room before it would engage), so `fixed` sidesteps the whole
+     bug class outright — same pattern already used for .bottom-nav below.
+     JS (syncHeaderHeight) reserves the equivalent space via #main's
+     padding-top since fixed elements are removed from document flow. */
+  position: fixed;
+  top: 0; left: 0; right: 0;
   z-index: 20;
-  /* iOS Safari (still, as of current versions) can fail to paint a sticky
-     element's own background until it actually becomes "stuck" by
-     scrolling — it sits blank/transparent on load, showing the page's
-     --paper background through instead. Forcing an early GPU layer
-     promotion makes Safari composite the background immediately. */
-  transform: translateZ(0);
 }
 .app-header::before {
   content: '';
@@ -118,6 +121,11 @@ p { margin: 0 0 8px; }
 #main {
   max-width: 720px;
   margin: 0 auto;
+  /* --header-height is measured and kept in sync by JS (syncHeaderHeight
+     in app.js), since the header is now position:fixed and its real
+     height varies with env(safe-area-inset-top). The static fallback is
+     just to avoid a flash of content under the header before JS runs. */
+  padding-top: var(--header-height, 64px);
   padding-bottom: calc(var(--nav-height) + 24px);
 }
 .view { display: none; }

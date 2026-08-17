@@ -50,6 +50,20 @@
     renderAll();
     showView('today');
     registerServiceWorker();
+
+    syncHeaderHeight();
+    window.addEventListener('resize', syncHeaderHeight);
+    window.addEventListener('orientationchange', syncHeaderHeight);
+  }
+
+  // The header is position:fixed (see style.css for why), so it no longer
+  // reserves its own space in document flow — #main's padding-top has to
+  // match its real rendered height, which varies with
+  // env(safe-area-inset-top) across devices/orientations.
+  function syncHeaderHeight() {
+    const header = document.querySelector('.app-header');
+    if (!header) return;
+    document.documentElement.style.setProperty('--header-height', `${header.offsetHeight}px`);
   }
 
   function recompute() {
