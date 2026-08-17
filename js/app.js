@@ -9,6 +9,7 @@
   let derived = null;
   let selectedProgramIndex = 0; // transient UI selection on the Today screen
   let confirmCallback = null;
+  let modalScrollY = 0;
 
   const $ = (id) => document.getElementById(id);
 
@@ -1044,15 +1045,73 @@
     $('rankupCloseBtn').addEventListener('click', () => { $('rankupBanner').hidden = true; });
   }
 
+  /* Modal scroll-lock. We deliberately do NOT use the classic
+     "position: fixed the body" trick here — flipping body's layout mode
+     to fixed is a large synchronous relayout happening in the same tick
+     as unhiding the overlay, and real iOS Safari has been observed to
+     drop/defer the overlay's repaint when that happens (it only shows up
+     after something else — like switching tabs — forces a later repaint).
+     Plain `overflow: hidden` avoids that: iOS 13+ Safari honors it for
+     preventing background touch-scroll, no layout-mode change involved. */
+  function lockBodyScroll() {
+    modalScrollY = window.scrollY || window.pageYOffset || 0;
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function unlockBodyScroll() {
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+  }
+
+  function syncOverlayToViewport() {
+    const overlay = $('overlay');
+    const vv = window.visualViewport;
+    if (!overlay || !vv) return;
+    overlay.style.left = `${vv.offsetLeft}px`;
+    overlay.style.top = `${vv.offsetTop}px`;
+    overlay.style.width = `${vv.width}px`;
+    overlay.style.height = `${vv.height}px`;
+  }
+
+  function clearOverlayViewportOverride() {
+    const overlay = $('overlay');
+    if (!overlay) return;
+    overlay.style.left = '';
+    overlay.style.top = '';
+    overlay.style.width = '';
+    overlay.style.height = '';
+  }
+
   function openModal(id) {
     document.querySelectorAll('.modal').forEach((m) => { m.hidden = m.id !== id; });
-    $('overlay').hidden = false;
+    const overlay = $('overlay');
+    if (overlay.hidden) {
+      lockBodyScroll();
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', syncOverlayToViewport);
+        window.visualViewport.addEventListener('scroll', syncOverlayToViewport);
+      }
+      syncOverlayToViewport();
+    }
+    overlay.hidden = false;
+    // Force a synchronous layout flush right after unhiding. Safari has been
+    // observed to sit on the repaint of a newly-unhidden fixed element until
+    // something unrelated forces one later — this nudges it immediately.
+    void overlay.offsetHeight;
   }
 
   function closeModal() {
-    $('overlay').hidden = true;
+    const overlay = $('overlay');
+    overlay.hidden = true;
     document.querySelectorAll('.modal').forEach((m) => { m.hidden = true; });
     confirmCallback = null;
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', syncOverlayToViewport);
+      window.visualViewport.removeEventListener('scroll', syncOverlayToViewport);
+    }
+    clearOverlayViewportOverride();
+    unlockBodyScroll();
   }
 
   function openConfirm(title, body, onConfirm, options) {
