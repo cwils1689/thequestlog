@@ -63,6 +63,7 @@ p { margin: 0 0 8px; }
 
 /* ---------------- Header ---------------- */
 .app-header {
+  padding-top: env(safe-area-inset-top);
   background: var(--ink);
   background-image:
     radial-gradient(1.5px 1.5px at 10% 30%, #fff 100%, transparent),

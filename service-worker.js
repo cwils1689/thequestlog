@@ -2,7 +2,7 @@
    The app is already static + localStorage, so this just caches the app
    shell and data so it still opens with no signal mid-workout. */
 
-const CACHE_NAME = 'quest-log-v4';
+const CACHE_NAME = 'quest-log-v5';
 const NETWORK_TIMEOUT_MS = 3000;
 
 const CORE_ASSETS = [
@@ -16,6 +16,10 @@ const CORE_ASSETS = [
   './quest-data.json',
   './manifest.webmanifest',
   './assets/icons/icon.svg',
+  './assets/icons/icon-32.png',
+  './assets/icons/icon-180.png',
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png',
   './assets/badges/first_hang.png',
   './assets/badges/squad_leader.png',
   './assets/badges/iron_grip.png',
